@@ -2,51 +2,51 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ngân hàng Trắc nghiệm Tin học 10 - NCKH</title>
+    <title>Ngân hàng Trắc nghiệm Tin học 10</title>
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAydBUQ9p7ZdZwnzyQn2zFtxo0wAUghbQM",
-            authDomain: "nckh-5722c.firebaseapp.com",
-            projectId: "nckh-5722c",
-            storageBucket: "nckh-5722c.firebasestorage.app",
-            messagingSenderId: "105437201456",
-            appId: "1:105437201456:web:739bfbce5a560d80e319f5"
-        };
+        
+        const firebaseConfig = { apiKey: "AIzaSyAydBUQ9p7ZdZwnzyQn2zFtxo0wAUghbQM", authDomain: "nckh-5722c.firebaseapp.com", projectId: "nckh-5722c", storageBucket: "nckh-5722c.firebasestorage.app", messagingSenderId: "105437201456", appId: "1:105437201456:web:739bfbce5a560d80e319f5" };
         const app = initializeApp(firebaseConfig);
+        
         window.auth = getAuth(app);
-        window.db = getFirestore(app);
         window.signIn = signInWithEmailAndPassword;
         window.signUp = createUserWithEmailAndPassword;
         window.signOut = signOut;
         window.onAuthStateChanged = onAuthStateChanged;
-        window.doc = doc; window.setDoc = setDoc; window.getDoc = getDoc;
     </script>
-    
-    <!-- Các script và style cũ của bạn ở đây... -->
-    <!-- (Đã lược bỏ phần CSS/JS cũ để ngắn gọn, bạn dán nội dung cũ vào đây) -->
+    <style>
+        body { font-family: sans-serif; background: #f8fafc; margin: 0; }
+        #auth-screen { display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .auth-box { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        #main-app { display: none; }
+    </style>
 </head>
 <body>
 
-    <!-- Màn hình Đăng nhập (Chặn toàn bộ app) -->
-    <div id="auth-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:99999; display:flex; align-items:center; justify-content:center;">
-        <div style="width:350px; padding:2rem; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.1);">
+    <!-- Màn hình Đăng nhập -->
+    <div id="auth-screen">
+        <div class="auth-box">
             <h2>Đăng nhập Hệ thống</h2>
-            <input type="email" id="email" placeholder="Email" style="width:100%; padding:10px; margin:10px 0;">
-            <input type="password" id="pass" placeholder="Mật khẩu" style="width:100%; padding:10px; margin:10px 0;">
-            <button onclick="authAction(false)" style="width:100%; padding:10px; background:#2563eb; color:white; border:none; cursor:pointer;">Đăng nhập</button>
-            <button onclick="authAction(true)" style="width:100%; padding:10px; background:#28a745; color:white; border:none; cursor:pointer; margin-top:10px;">Đăng ký tài khoản</button>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="pass" placeholder="Mật khẩu">
+            <button onclick="handleAuth(false)">Đăng nhập</button>
+            <button onclick="handleAuth(true)" style="background:#28a745;">Đăng ký</button>
         </div>
     </div>
 
-    <!-- Nội dung App (Bọc trong div này) -->
-    <div id="main-app" style="display:none;">
-      <aside class="sidebar">
+    <!-- Nội dung App của bạn -->
+    <div id="main-app">
+        <!-- DÁN NỘI DUNG CŨ CỦA BẠN VÀO DƯỚI ĐÂY -->
+        <div style="padding: 20px;">
+            <h1>Chào mừng bạn đã đăng nhập thành công!</h1>
+            <button onclick="window.signOut(window.auth)" style="background:#ef4444; width: 150px;">Đăng xuất</button>
+        </div>
+       <aside class="sidebar">
         <div>
             <div class="profile-card">
                 <div class="avatar">👨‍🎓</div>
@@ -440,26 +440,19 @@ BẮT BUỘC TRẢ LỜI ĐÚNG ĐỊNH DẠNG JSON SAU (Tuyệt đối không v
     </div>
 
     <script>
-        // Logic điều hướng    
+        // Kiểm tra trạng thái đăng nhập
         window.onAuthStateChanged(window.auth, (user) => {
-            if (user) {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-app').style.display = 'block';
-            } else {
-                document.getElementById('auth-screen').style.display = 'flex';
-                document.getElementById('main-app').style.display = 'none';
-            }
+            document.getElementById('auth-screen').style.display = user ? 'none' : 'flex';
+            document.getElementById('main-app').style.display = user ? 'block' : 'none';
         });
 
-        async function authAction(isRegister) {
+        // Hàm xử lý đăng nhập/đăng ký
+        async function handleAuth(isRegister) {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('pass').value;
             try {
-                if (isRegister) {
-                    await window.signUp(window.auth, email, pass);
-                } else {
-                    await window.signIn(window.auth, email, pass);
-                }
+                if (isRegister) await window.signUp(window.auth, email, pass);
+                else await window.signIn(window.auth, email, pass);
             } catch (e) { alert(e.message); }
         }
     </script>
