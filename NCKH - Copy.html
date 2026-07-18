@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ngân hàng Trắc nghiệm Tin học 10</title>
+    <!-- Firebase Libraries -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAydBUQ9p7ZdZwnzyQn2zFtxo0wAUghbQM",
+            authDomain: "nckh-5722c.firebaseapp.com",
+            projectId: "nckh-5722c",
+            storageBucket: "nckh-5722c.firebasestorage.app",
+            messagingSenderId: "105437201456",
+            appId: "1:105437201456:web:739bfbce5a560d80e319f5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.auth = getAuth(app);
+        window.db = getFirestore(app);
+        window.signIn = signInWithEmailAndPassword;
+        window.signUp = createUserWithEmailAndPassword;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+        window.doc = doc; window.setDoc = setDoc; window.getDoc = getDoc;
+    </script>
+    <style>
+        /* Styles tổng hợp */
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        #auth-screen { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        #main-app { display: none; width: 100%; max-width: 900px; padding: 20px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+        .stats-box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+
+    <!-- Màn hình Đăng nhập -->
+    <div id="auth-screen">
+        <h2>Đăng nhập Hệ thống</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="pass" placeholder="Mật khẩu">
+        <button onclick="authAction(false)">Đăng nhập</button>
+        <button onclick="authAction(true)" style="background:#28a745;">Đăng ký</button>
+    </div>
+
+    <!-- Màn hình chính -->
+    <div id="main-app">
+        <div class="stats-box">
+            <h1>Chào mừng em!</h1>
+            <p id="user-display">Đang đồng bộ dữ liệu...</p>
+            <button onclick="window.signOut(window.auth)" style="background:#ef4444; width:120px;">Đăng xuất</button>
+        </div>
+        <!-- Nội dung trắc nghiệm AI sẽ được hiển thị tại đây -->
+        <div id="quiz-zone">
+            <h3>Chào mừng tới Ngân hàng đề thi Tin học 10</h3>
+            <p>Hệ thống đã kết nối thành công với Firestore đám mây.</p>
+        </div>
+    </div>
+
+    <script>
+        // Điều hướng sau đăng nhập
+        window.onAuthStateChanged(window.auth, async (user) => {
+            if (user) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                const docSnap = await window.getDoc(window.doc(window.db, "students", user.uid));
+                if (docSnap.exists()) {
+                    document.getElementById('user-display').innerHTML = `Tài khoản: ${user.email} | XP hiện tại: <b>${docSnap.data().xp}</b>`;
+                }
+            } else {
+                document.getElementById('auth-screen').style.display = 'block';
+                document.getElementById('main-app').style.display = 'none';
+            }
+        });
+
+        // Hàm xử lý Đăng nhập/Đăng ký
+        async function authAction(isRegister) {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            try {
+                if (isRegister) {
+                    const res = await window.signUp(window.auth, email, pass);
+                    await window.setDoc(window.doc(window.db, "students", res.user.uid), { xp: 0, name: email });
+                } else {
+                    await window.signIn(window.auth, email, pass);
+                }
+            } catch (e) { alert(e.message); }
+        }
+    </script>
+</body>
+</html>
