@@ -3,64 +3,448 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ngân hàng Trắc nghiệm Tin học 10</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>Ngân hàng Trắc nghiệm Tin học 10 - NCKH</title>
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        const firebaseConfig = { apiKey: "AIzaSyAydBUQ9p7ZdZwnzyQn2zFtxo0wAUghbQM", authDomain: "nckh-5722c.firebaseapp.com", projectId: "nckh-5722c", storageBucket: "nckh-5722c.firebasestorage.app", messagingSenderId: "105437201456", appId: "1:105437201456:web:739bfbce5a560d80e319f5" };
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAydBUQ9p7ZdZwnzyQn2zFtxo0wAUghbQM",
+            authDomain: "nckh-5722c.firebaseapp.com",
+            projectId: "nckh-5722c",
+            storageBucket: "nckh-5722c.firebasestorage.app",
+            messagingSenderId: "105437201456",
+            appId: "1:105437201456:web:739bfbce5a560d80e319f5"
+        };
         const app = initializeApp(firebaseConfig);
         window.auth = getAuth(app);
+        window.db = getFirestore(app);
+        window.signIn = signInWithEmailAndPassword;
+        window.signUp = createUserWithEmailAndPassword;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+        window.doc = doc; window.setDoc = setDoc; window.getDoc = getDoc;
     </script>
-
-    <style>
-        /* CSS của bạn */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #334155; }
-        #auth-screen { display: flex; align-items: center; justify-content: center; height: 100vh; }
-        .auth-box { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
-        button { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-        #main-app { display: none; padding: 24px; display: flex; gap: 24px; }
-        .sidebar { width: 320px; background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; }
-        .main-content { flex: 1; background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 24px; }
-    </style>
+    
+    <!-- Các script và style cũ của bạn ở đây... -->
+    <!-- (Đã lược bỏ phần CSS/JS cũ để ngắn gọn, bạn dán nội dung cũ vào đây) -->
 </head>
 <body>
 
-    <!-- Màn hình Đăng nhập -->
-    <div id="auth-screen">
-        <div class="auth-box">
+    <!-- Màn hình Đăng nhập (Chặn toàn bộ app) -->
+    <div id="auth-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:99999; display:flex; align-items:center; justify-content:center;">
+        <div style="width:350px; padding:2rem; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.1);">
             <h2>Đăng nhập Hệ thống</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="pass" placeholder="Mật khẩu">
-            <button onclick="authAction(false)">Đăng nhập</button>
-            <button onclick="authAction(true)" style="background:#28a745;">Đăng ký</button>
+            <input type="email" id="email" placeholder="Email" style="width:100%; padding:10px; margin:10px 0;">
+            <input type="password" id="pass" placeholder="Mật khẩu" style="width:100%; padding:10px; margin:10px 0;">
+            <button onclick="authAction(false)" style="width:100%; padding:10px; background:#2563eb; color:white; border:none; cursor:pointer;">Đăng nhập</button>
+            <button onclick="authAction(true)" style="width:100%; padding:10px; background:#28a745; color:white; border:none; cursor:pointer; margin-top:10px;">Đăng ký tài khoản</button>
         </div>
     </div>
 
-    <!-- Màn hình chính (App của bạn nằm ở đây) -->
-    <div id="main-app">
-        <aside class="sidebar">
-            <button onclick="window.auth.signOut()" style="background:#ef4444;">Đăng xuất</button>
-            <div id="level-list"></div>
-        </aside>
-        <main class="main-content">
-            <h1>Chào mừng bạn đã đăng nhập!</h1>
-            <div id="quiz-workspace"></div>
-        </main>
+    <!-- Nội dung App (Bọc trong div này) -->
+    <div id="main-app" style="display:none;">
+      <aside class="sidebar">
+        <div>
+            <div class="profile-card">
+                <div class="avatar">👨‍🎓</div>
+                <h2 style="font-weight: 700; color: #1e293b; font-size: 18px;">Học sinh Lớp 10</h2>
+                <p style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Hệ thống Đánh giá Tiến trình</p>
+            </div>
+
+            <div class="progress-box">
+                <p class="progress-title">TRÌNH ĐỘ LÝ THUYẾT</p>
+                <h3 id="current-level-name" class="level-name">Nhập môn</h3>
+                <div class="bar-bg">
+                    <div id="xp-bar" class="bar-fill"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #475569; font-medium: 500;">
+                    <span><span id="xp-val">0</span> / <span id="xp-next-val">300</span> XP</span>
+                    <span id="exercises-completed" style="color: #059669; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; font-size: 11px;">Cấp độ câu hỏi: 1/5</span>
+                </div>
+            </div>
+
+            <div>
+                <p class="topic-section-title">📂 Ngân hàng câu hỏi theo Chương</p>
+                <div id="level-list" class="level-list"></div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; font-size: 11px; color: #94a3b8; font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+            Đề tài NCKH Ngân hàng đề thông minh
+        </div>
+    </aside>
+
+    <!-- KHU VỰC CHÍNH: BÀI TẬP TRẮC NGHIỆM BIÊN SOẠN BỞI AI -->
+    <main class="main-content">
+        <header class="main-header">
+            <div>
+                <h1 style="font-weight: 700; font-size: 20px; color: #1e293b;">📝 HỆ THỐNG LUYỆN TRẮC NGHIỆM TIN HỌC 10 VÔ HẠN</h1>
+                <p style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Tự động đào sâu kiến thức và tăng độ khó theo năng lực học sinh</p>
+            </div>
+            <button onclick="generateQuizFromAI()" class="btn-refresh">Đổi câu hỏi khác</button>
+        </header>
+
+        <div class="workspace-area">
+            <div id="quiz-workspace" style="width: 100%; max-w: 768px; max-width: 768px;">
+                <div class="loading-box" id="quiz-loading">
+                    <div class="spinner"></div>
+                    <p style="font-size: 14px; color: #64748b; font-weight: 500;">Thầy giáo AI đang soạn câu hỏi phân hóa...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- WIDGET CHATBOT AI THU NHỎ (ICON THẦY GIÁO NỔI Ở GÓC PHẢI) -->
+    <div id="chatbot-widget">
+        <div id="chatbot-window">
+            <div class="chat-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">👨‍🏫</span>
+                    <div>
+                        <h3 style="font-size: 14px;">Trợ lý Sư phạm AI</h3>
+                        <p style="font-size: 10px; color: #bfdbfe; font-weight: 400;">Giải đáp mọi thắc mắc của em</p>
+                    </div>
+                </div>
+                <button onclick="toggleChatWindow()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
+            </div>
+            
+            <div id="chat-messages-container">
+                <div class="chat-msg bot">
+                    <div style="font-size: 10px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;">Thầy giáo AI</div>
+                    <div class="chat-bubble bot">Chào em! Nếu có phần nào chưa hiểu rõ trong câu hỏi trắc nghiệm, em cứ nhắn vào đây để thầy giảng giải chi tiết nhé!</div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="chat-user-input" placeholder="Thầy ơi, giải thích giúp em...">
+                <button onclick="sendChatMessage()">Gửi</button>
+            </div>
+        </div>
+
+        <button id="chatbot-icon-btn" onclick="toggleChatWindow()" title="Hỏi thầy giáo AI">
+            <span style="font-size: 30px; color: white;">👨‍🏫</span>
+        </button>
     </div>
 
     <script>
-        // Điều hướng đăng nhập
-        window.auth.onAuthStateChanged((user) => {
+        // CẬP NHẬT HOÀN TOÀN API KEY MỚI CỦA BẠN TRÁNH BỊ BLOCK
+        const API_KEY = "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"; 
+        const URL = "https://api.groq.com/openai/v1/chat/completions";
+
+        let studentState = {
+            xp: 0,
+            consecutiveCorrect: 0, 
+            quizDifficulty: 1,     
+            selectedTopicIndex: 0
+        };
+
+        const topics = [
+            { id: 1, title: "Máy tính và Xã hội tri thức", desc: "Thông tin, Dữ liệu, Thiết bị thông minh, IoT..." },
+            { id: 2, title: "Mạng máy tính & Internet", desc: "Mạng máy tính, Điện toán đám mây, Giao thức..." },
+            { id: 3, title: "Đạo đức, Pháp luật & Văn hóa số", desc: "Bản quyền, Giao tiếp an toàn trên không gian mạng..." },
+            { id: 4, title: "Lập trình Python: Biến & Kiểu dữ liệu", desc: "Làm quen Python, Biến, Ép kiểu, print(), input()..." },
+            { id: 5, title: "Cấu trúc Rẽ nhánh Python", desc: "Câu lệnh điều kiện if, if-else, lệnh lồng nhau..." },
+            { id: 6, title: "Cấu trúc Vòng lặp Python", desc: "Vòng lặp for, vòng lặp while, hàm range()..." }
+        ];
+
+        const LEVELS_SYSTEM = [
+            { name: "Nhập môn", minXp: 0, maxXp: 150 },
+            { name: "Cơ bản", minXp: 150, maxXp: 400 },
+            { name: "Khá", minXp: 400, maxXp: 900 },
+            { name: "Trung cấp", minXp: 900, maxXp: 1600 },
+            { name: "Chuyên sâu", minXp: 1600, maxXp: 3000 },
+            { name: "Chuyên gia Tin học", minXp: 3000, maxXp: 999999 }
+        ];
+
+        let currentActiveQuizData = null; 
+
+        // HÀM GỌI AI SOẠN ĐỀ: BỘ TRÍCH XUẤT JSON CHỐNG SẬP TUYỆT ĐỐI
+        async function generateQuizFromAI() {
+            const container = document.getElementById('quiz-workspace');
+            container.innerHTML = `
+                <div class="loading-box">
+                    <div class="spinner"></div>
+                    <p style="font-size: 14px; color: #64748b; font-weight: 500;">Thầy giáo AI đang biên soạn câu hỏi Cấp độ ${studentState.quizDifficulty}/5...</p>
+                </div>`;
+
+            const topicName = topics[studentState.selectedTopicIndex].title;
+            let difficultyDesc = "";
+            switch(studentState.quizDifficulty) {
+                case 1: difficultyDesc = "Cấp 1: Nhận biết (Hỏi định nghĩa khái niệm cơ bản)"; break;
+                case 2: difficultyDesc = "Cấp 2: Thông hiểu (Yêu cầu giải thích, phân biệt khái niệm)"; break;
+                case 3: difficultyDesc = "Cấp 3: Vận dụng thấp (Tính toán kết quả hoặc viết đoạn mã Python ngắn)"; break;
+                case 4: difficultyDesc = "Cấp 4: Vận dụng cao (Phân tích tìm lỗi logic, tối ưu hóa thuật toán)"; break;
+                case 5: difficultyDesc = "Cấp 5: Đào sâu bản chất nâng cao (Câu hỏi cực khó về cơ chế vận hành hệ thống)"; break;
+            }
+
+            const promptQuiz = `Bạn là chuyên gia khảo thí môn Tin học lớp 10. Hãy tạo ra ĐÚNG 1 câu hỏi trắc nghiệm khách quan có 4 lựa chọn phản ánh đúng chuyên đề: "${topicName}".
+Yêu cầu độ khó sâu: ${difficultyDesc}.
+
+BẮT BUỘC TRẢ LỜI ĐÚNG ĐỊNH DẠNG JSON SAU (Tuyệt đối không viết thêm lời mở đầu hay kết luận ngoài JSON):
+{
+  "question": "Nội dung câu hỏi cụ thể?",
+  "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
+  "correctIndex": 0,
+  "explanation": "Lời giải thích tường tận mang tính sư phạm giúp học sinh hiểu sâu bản chất lý thuyết."
+}`;
+
+            try {
+                const response = await fetch(URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+                    body: JSON.stringify({ 
+                        model: "llama-3.3-70b-versatile", 
+                        messages: [{role: "user", content: promptQuiz}],
+                        response_format: { type: "json_object" } 
+                    })
+                });
+                const data = await response.json();
+                
+                let rawContent = data.choices[0].message.content.trim();
+                const startIdx = rawContent.indexOf('{');
+                const endIdx = rawContent.lastIndexOf('}');
+                if (startIdx !== -1 && endIdx !== -1) {
+                    rawContent = rawContent.substring(startIdx, endIdx + 1);
+                }
+
+                const quizData = JSON.parse(rawContent);
+                currentActiveQuizData = quizData; 
+                renderQuizBox(quizData);
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = `
+                    <div style="background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 24px; border-radius: 16px; text-align: center;">
+                        <p style="font-weight: 700; margin-bottom: 8px;">⚠️ Không thể tải câu hỏi trắc nghiệm từ máy chủ AI!</p>
+                        <p style="font-size: 12px; color: #b91c1c; margin-bottom: 16px;">Vui lòng kiểm tra lại kết nối mạng Internet của máy tính.</p>
+                        <button onclick="generateQuizFromAI()" style="background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer;">Thử tải lại câu hỏi</button>
+                    </div>`;
+            }
+        }
+
+        function renderQuizBox(quizData) {
+            const container = document.getElementById('quiz-workspace');
+            let formattedQuestion = quizData.question.replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code style="background:#f1f5f9; color:#dc2626; padding: 2px 6px; border-radius:4px; font-family:monospace;">$1</code>');
+
+            let optionsHtml = quizData.options.map((opt, idx) => `
+                <button class="quiz-opt" onclick="checkAnswer(${idx}, ${quizData.correctIndex}, this, '${btoa(unescape(encodeURIComponent(quizData.explanation)))}')">
+                    ${opt}
+                </button>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="quiz-container-box">
+                    <div class="quiz-header-badge">
+                        <span>Chuyên đề: ${topics[studentState.selectedTopicIndex].title}</span>
+                        <span style="color: #d97706; background: #fffbeb; padding: 4px 8px; border-radius: 6px; border: 1px solid #fef3c7;">Độ sâu năng lực: Cấp ${studentState.quizDifficulty}/5</span>
+                    </div>
+                    <div style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 24px; line-height: 1.6;">${formattedQuestion}</div>
+                    <div id="quiz-options-zone">${optionsHtml}</div>
+                    <div id="quiz-feedback-zone" style="display:none;"></div>
+                </div>`;
+        }
+
+        function checkAnswer(selectedIdx, correctIdx, selectedBtn, encodedExplanation) {
+            const explanation = decodeURIComponent(escape(atob(encodedExplanation)));
+            const zone = document.getElementById('quiz-options-zone');
+            const buttons = zone.querySelectorAll('.quiz-opt');
+            
+            buttons.forEach(btn => btn.disabled = true);
+
+            const feedbackZone = document.getElementById('quiz-feedback-zone');
+            feedbackZone.style.display = 'block';
+
+            if (selectedIdx === correctIdx) {
+                selectedBtn.classList.add('correct');
+                try { confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } }); } catch(e){}
+
+                studentState.xp += 10 * studentState.quizDifficulty; 
+                studentState.consecutiveCorrect += 1;
+
+                if (studentState.consecutiveCorrect >= 2 && studentState.quizDifficulty < 5) {
+                    studentState.quizDifficulty += 1;
+                    studentState.consecutiveCorrect = 0;
+                    feedbackZone.innerHTML = `
+                        <div class="feedback-card success">
+                            <p style="font-weight: 700; font-size: 15px;">🎉 Xuất sắc! Em đã làm đúng chuỗi câu hỏi. Thầy tự động nâng độ khó bài tập lên Cấp ${studentState.quizDifficulty}!</p>
+                            <p style="font-size: 13px; margin-top: 6px; opacity: 0.9;">${explanation}</p>
+                        </div>`;
+                } else {
+                    feedbackZone.innerHTML = `
+                        <div class="feedback-card success">
+                            <p style="font-weight: 700; font-size: 15px;">🎉 Trả lời chính xác! (+${10 * studentState.quizDifficulty} XP)</p>
+                            <p style="font-size: 13px; margin-top: 4px; opacity: 0.9;">${explanation}</p>
+                        </div>`;
+                }
+            } else {
+                selectedBtn.classList.add('wrong');
+                buttons[correctIdx].classList.add('correct'); 
+
+                studentState.consecutiveCorrect = 0;
+                if (studentState.quizDifficulty > 1) {
+                    studentState.quizDifficulty -= 1;
+                }
+
+                feedbackZone.innerHTML = `
+                    <div class="feedback-card error">
+                        <p style="font-weight: 700; font-size: 15px;">❌ Chưa chính xác rồi em! Thầy hạ độ sâu kiến thức xuống Cấp ${studentState.quizDifficulty} để em vững nền tảng ôn luyện.</p>
+                        <p style="font-size: 13px; margin-top: 4px; opacity: 0.9;">${explanation}</p>
+                        <button onclick="openChatWithContext()" style="margin-top: 12px; background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">❓ Bấm vào đây để hỏi Thầy giáo AI chi tiết hơn</button>
+                    </div>`;
+            }
+
+            feedbackZone.innerHTML += `
+                <div style="margin-top: 16px; overflow: hidden;">
+                    <button onclick="generateQuizFromAI()" class="btn-next">Làm câu tiếp theo ➔</button>
+                </div>`;
+
+            updateDashboardUI();
+            saveStudentProgress();
+        }
+
+        // HÀM ĐIỀU KHIỂN CHATBOT NỔI THU GỌN
+        function toggleChatWindow() {
+            const win = document.getElementById('chatbot-window');
+            win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
+        }
+
+        function openChatWithContext() {
+            toggleChatWindow();
+            document.getElementById('chatbot-window').style.display = 'flex';
+            if (currentActiveQuizData) {
+                const input = document.getElementById('chat-user-input');
+                input.value = `Thầy giải thích chuyên sâu hơn giúp em về câu hỏi: "${currentActiveQuizData.question.substring(0, 40)}..." vì sao chọn đáp án "${currentActiveQuizData.options[currentActiveQuizData.correctIndex]}" ạ?`;
+                sendChatMessage();
+            }
+        }
+
+        let chatHistory = [{
+            role: "system",
+            content: "Bạn là Thầy giáo Sư phạm Tin học lớp 10 tại Việt Nam. Chỉ trả lời các thắc mắc lý thuyết ngắn gọn, dễ hiểu, tận tình thúc đẩy tinh thần học tập của học sinh."
+        }];
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-user-input');
+            const messageText = input.value.trim();
+            if (!messageText) return;
+
+            appendChatBubble(messageText, 'user', 'Học sinh');
+            input.value = '';
+            chatHistory.push({ role: "user", content: messageText });
+            
+            const loadingId = 'loading-' + Date.now();
+            const msgContainer = document.getElementById('chat-messages-container');
+            msgContainer.innerHTML += `
+                <div class="chat-msg bot" id="${loadingId}">
+                    <div style="font-size: 10px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;">Thầy giáo AI</div>
+                    <div class="chat-bubble bot" style="color:#94a3b8; font-style:italic;">Thầy đang soạn câu trả lời giải thích...</div>
+                </div>`;
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+
+            try {
+                const response = await fetch(URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+                    body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: chatHistory, temperature: 0.4 })
+                });
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+
+                if (data.choices && data.choices.length > 0) {
+                    const reply = data.choices[0].message.content;
+                    chatHistory.push({ role: "assistant", content: reply });
+                    appendChatBubble(reply, 'bot', 'Thầy giáo AI');
+                }
+            } catch(e) {
+                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                appendChatBubble("❌ Thầy mất kết nối mạng rồi, em nhấn gửi lại nhé!", 'bot', 'Thầy giáo AI');
+            }
+        }
+
+        function appendChatBubble(text, sender, tagLabel) {
+            const msgContainer = document.getElementById('chat-messages-container');
+            const wrapper = document.createElement('div');
+            wrapper.className = `chat-msg ${sender}`;
+            
+            const tag = document.createElement('div');
+            tag.style = 'font-size: 10px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;';
+            tag.textContent = tagLabel;
+
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${sender}`;
+            bubble.innerHTML = text.replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code style="background:#fef3c7; color:#b45309; padding:1px 4px; border-radius:4px;">$1</code>');
+
+            wrapper.appendChild(tag);
+            wrapper.appendChild(bubble);
+            msgContainer.appendChild(wrapper);
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+        }
+
+        document.getElementById('chat-user-input').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') sendChatMessage();
+        });
+
+        // ĐỒNG BỘ DỮ LIỆU GIAO DIỆN HỆ THỐNG
+        function initTopicsMenu() {
+            const container = document.getElementById('level-list');
+            container.innerHTML = '';
+            topics.forEach((topic, index) => {
+                const activeClass = studentState.selectedTopicIndex === index ? 'active' : '';
+                const el = document.createElement('div');
+                el.className = `level-card ${activeClass}`;
+                el.innerHTML = `<p style="font-size: 13px; color: #1e293b; font-weight: 700; margin-bottom: 2px;">Chương ${topic.id}: ${topic.title}</p>
+                                <p style="font-size: 11px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${topic.desc}</p>`;
+                el.onclick = () => selectTopic(index);
+                container.appendChild(el);
+            });
+        }
+
+        function selectTopic(index) {
+            studentState.selectedTopicIndex = index;
+            studentState.quizDifficulty = 1; 
+            studentState.consecutiveCorrect = 0;
+            initTopicsMenu();
+            generateQuizFromAI();
+            saveStudentProgress();
+        }
+
+        function updateDashboardUI() {
+            let currentLevelObj = LEVELS_SYSTEM[0];
+            for (let i = 0; i < LEVELS_SYSTEM.length; i++) {
+                if (studentState.xp >= LEVELS_SYSTEM[i].minXp && studentState.xp < LEVELS_SYSTEM[i].maxXp) { 
+                    currentLevelObj = LEVELS_SYSTEM[i]; 
+                    break; 
+                }
+            }
+            document.getElementById('current-level-name').textContent = currentLevelObj.name;
+            document.getElementById('xp-val').textContent = studentState.xp;
+            document.getElementById('exercises-completed').textContent = `Cấp độ câu hỏi: ${studentState.quizDifficulty}/5`;
+            
+            const pct = ((studentState.xp - currentLevelObj.minXp) / (currentLevelObj.maxXp - currentLevelObj.minXp)) * 100;
+            document.getElementById('xp-bar').style.width = `${Math.min(pct, 100)}%`;
+            document.getElementById('xp-next-val').textContent = currentLevelObj.maxXp;
+        }
+
+        function saveStudentProgress() { localStorage.setItem("nckh_tinhoc10_v3", JSON.stringify(studentState)); }
+
+        window.onload = function() {
+            const saved = localStorage.getItem("nckh_tinhoc10_v3");
+            if (saved) studentState = JSON.parse(saved);
+            initTopicsMenu();
+            updateDashboardUI();
+            generateQuizFromAI(); 
+        };
+    </script>
+    </div>
+
+    <script>
+        // Logic điều hướng    
+        window.onAuthStateChanged(window.auth, (user) => {
             if (user) {
                 document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-app').style.display = 'flex';
+                document.getElementById('main-app').style.display = 'block';
             } else {
                 document.getElementById('auth-screen').style.display = 'flex';
                 document.getElementById('main-app').style.display = 'none';
@@ -71,8 +455,11 @@
             const email = document.getElementById('email').value;
             const pass = document.getElementById('pass').value;
             try {
-                if (isRegister) await window.auth.createUserWithEmailAndPassword(email, pass);
-                else await window.auth.signInWithEmailAndPassword(email, pass);
+                if (isRegister) {
+                    await window.signUp(window.auth, email, pass);
+                } else {
+                    await window.signIn(window.auth, email, pass);
+                }
             } catch (e) { alert(e.message); }
         }
     </script>
