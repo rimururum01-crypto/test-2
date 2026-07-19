@@ -2,143 +2,120 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Quản lý - NCKH Tin học 10</title>
-    
-    <!-- FIREBASE COMPAT -->
+    <title>Dashboard Giáo viên - NCKH</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: #f1f5f9; color: #334155; padding: 32px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
-        .header h1 { font-size: 24px; color: #0f172a; font-weight: 700; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .stat-card { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; border-top: 4px solid #3b82f6; }
-        .stat-title { font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
-        .stat-value { font-size: 32px; font-weight: 700; color: #1e293b; }
-        .table-container { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; overflow-x: auto; }
-        .table-container h2 { font-size: 18px; margin-bottom: 16px; color: #0f172a; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { padding: 12px 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 600; color: #64748b; }
-        td { padding: 16px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
-        .badge { padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-        .badge-correct { background: #dcfce7; color: #166534; }
-        .badge-wrong { background: #fee2e2; color: #991b1b; }
-        .loading { text-align: center; padding: 40px; color: #64748b; font-weight: 500; }
+        body { font-family: sans-serif; background: #f1f5f9; padding: 24px; }
+        .filter-section { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; }
+        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .student-card { background: white; padding: 20px; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .student-card:hover { border-color: #2563eb; transform: translateY(-5px); }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; width: 400px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div>
-            <h1>📊 Bảng điều khiển Giáo viên</h1>
-            <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Dữ liệu đồng bộ trực tiếp (Real-time) từ hệ thống học sinh</p>
-        </div>
+    <h2>📊 Bảng điều khiển Giáo viên</h2>
+    
+    <div class="filter-section">
+        <label>Lọc theo lớp:</label>
+        <select id="class-filter" onchange="renderDashboard()">
+            <option value="all">Tất cả lớp</option>
+        </select>
     </div>
 
-    <!-- THỐNG KÊ TỔNG QUAN -->
-    <div class="stats-grid">
-        <div class="stat-card" style="border-top-color: #3b82f6;">
-            <div class="stat-title">Tổng số Học sinh</div>
-            <div class="stat-value" id="total-users">0</div>
-        </div>
-        <div class="stat-card" style="border-top-color: #8b5cf6;">
-            <div class="stat-title">Tổng lượt làm bài</div>
-            <div class="stat-value" id="total-tests">0</div>
-        </div>
-        <div class="stat-card" style="border-top-color: #10b981;">
-            <div class="stat-title">Tỉ lệ trả lời Đúng</div>
-            <div class="stat-value" id="accuracy-rate">0%</div>
-        </div>
-    </div>
+    <div id="student-grid" class="student-grid"></div>
 
-    <!-- BẢNG CHI TIẾT LỊCH SỬ -->
-    <div class="table-container">
-        <h2>Lịch sử làm bài mới nhất</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Thời gian</th>
-                    <th>Họ và Tên</th>
-                    <th>Lớp</th>
-                    <th>Chuyên đề</th>
-                    <th>Cấp độ khó</th>
-                    <th>Kết quả</th>
-                </tr>
-            </thead>
-            <tbody id="history-tbody">
-                <tr><td colspan="6" class="loading">Đang tải dữ liệu từ Firebase...</td></tr>
-            </tbody>
-        </table>
+    <!-- Modal chi tiết -->
+    <div id="detail-modal" class="modal" onclick="this.style.display='none'">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 id="modal-name">Tên Học sinh</h2>
+            <p><strong>Lớp:</strong> <span id="modal-class"></span></p>
+            <hr>
+            <p>✅ Tỉ lệ đúng: <b id="modal-accuracy"></b></p>
+            <p>❌ Tổng sai: <b id="modal-wrong"></b></p>
+            <p>⚠️ Chủ đề yếu nhất: <b id="modal-weakest" style="color: #ef4444;"></b></p>
+        </div>
     </div>
 
     <script>
-        // BÊ Y NGUYÊN CẤU HÌNH FIREBASE CỦA BẠN VÀO ĐÂY
-        const firebaseConfig = {
+        const firebaseConfig = { /* GIỮ NGUYÊN CẤU HÌNH CŨ CỦA BẠN */
             apiKey: "AIzaSyAydBUQ9p7ZdZwnzyQn2zFtxo0wAUghbQM",
             authDomain: "nckh-5722c.firebaseapp.com",
             projectId: "nckh-5722c",
             storageBucket: "nckh-5722c.firebasestorage.app",
             messagingSenderId: "105437201456",
-            appId: "1:105437201456:web:739bfbce5a560d80e319f5",
-            measurementId: "G-9CW5KHY1XK"
+            appId: "1:105437201456:web:739bfbce5a560d80e319f5"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // LẮNG NGHE DỮ LIỆU SỐ LƯỢNG HỌC SINH
-        db.collection("users").onSnapshot((querySnapshot) => {
-            document.getElementById('total-users').innerText = querySnapshot.size;
-        });
+        let allUsers = [];
+        let allHistory = [];
 
-        // LẮNG NGHE LỊCH SỬ LÀM BÀI (REAL-TIME)
-        db.collection("history").orderBy("timestamp", "desc").limit(50).onSnapshot((querySnapshot) => {
-            const tbody = document.getElementById('history-tbody');
-            tbody.innerHTML = ''; 
-            
-            let totalCorrect = 0;
-            let totalTests = querySnapshot.size;
+        async function fetchData() {
+            const userSnap = await db.collection('users').get();
+            allUsers = userSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            if (totalTests === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="loading">Chưa có học sinh nào làm bài.</td></tr>';
-                return;
-            }
+            const histSnap = await db.collection('history').get();
+            allHistory = histSnap.docs.map(doc => doc.data());
 
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                if(data.isCorrect) totalCorrect++;
-
-                // Chuyển đổi thời gian
-                let timeString = "Đang xử lý...";
-                if (data.timestamp) {
-                    const date = data.timestamp.toDate();
-                    timeString = date.toLocaleTimeString('vi-VN') + " - " + date.toLocaleDateString('vi-VN');
+            // Tạo danh sách lớp cho filter
+            const classes = [...new Set(allUsers.map(u => u.className))];
+            const select = document.getElementById('class-filter');
+            classes.forEach(c => {
+                if(!document.querySelector(`option[value="${c}"]`)) {
+                    select.innerHTML += `<option value="${c}">${c}</option>`;
                 }
-
-                const resultBadge = data.isCorrect 
-                    ? `<span class="badge badge-correct">Đúng</span>` 
-                    : `<span class="badge badge-wrong">Sai</span>`;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="color: #64748b; font-size: 13px;">${timeString}</td>
-                    <td style="font-weight: 600;">${data.name}</td>
-                    <td>${data.className}</td>
-                    <td>${data.topic}</td>
-                    <td>Mức ${data.difficulty}</td>
-                    <td>${resultBadge}</td>
-                `;
-                tbody.appendChild(tr);
             });
+            renderDashboard();
+        }
 
-            // Cập nhật thống kê hiển thị
-            document.getElementById('total-tests').innerText = totalTests;
-            const accuracy = totalTests > 0 ? Math.round((totalCorrect / totalTests) * 100) : 0;
-            document.getElementById('accuracy-rate').innerText = accuracy + "%";
-        });
+        function renderDashboard() {
+            const filter = document.getElementById('class-filter').value;
+            const grid = document.getElementById('student-grid');
+            grid.innerHTML = '';
+
+            allUsers.forEach(user => {
+                if (filter !== 'all' && user.className !== filter) return;
+
+                const userHistory = allHistory.filter(h => h.userId === user.id);
+                const total = userHistory.length;
+                const correct = userHistory.filter(h => h.isCorrect).length;
+                const accuracy = total > 0 ? ((correct / total) * 100).toFixed(0) : 0;
+
+                const card = document.createElement('div');
+                card.className = 'student-card';
+                card.innerHTML = `<h3>${user.name}</h3><p>Lớp: ${user.className}</p><p>Tỉ lệ đúng: ${accuracy}%</p>`;
+                card.onclick = () => showDetail(user, userHistory, accuracy);
+                grid.appendChild(card);
+            });
+        }
+
+        function showDetail(user, history, accuracy) {
+            const wrongHistory = history.filter(h => !h.isCorrect);
+            const wrongCount = wrongHistory.length;
+            
+            // Tìm chủ đề sai nhiều nhất
+            const topicCounts = {};
+            wrongHistory.forEach(h => topicCounts[h.topic] = (topicCounts[h.topic] || 0) + 1);
+            let weakestTopic = "Không có";
+            let max = 0;
+            for(let topic in topicCounts) { if(topicCounts[topic] > max) { max = topicCounts[topic]; weakestTopic = topic; } }
+
+            document.getElementById('modal-name').textContent = user.name;
+            document.getElementById('modal-class').textContent = user.className;
+            document.getElementById('modal-accuracy').textContent = accuracy + "%";
+            document.getElementById('modal-wrong').textContent = wrongCount;
+            document.getElementById('modal-weakest').textContent = weakestTopic;
+            document.getElementById('detail-modal').style.display = 'flex';
+        }
+
+        fetchData();
     </script>
 </body>
 </html>
