@@ -4,19 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ngân hàng Trắc nghiệm Tin học 10 - NCKH</title>
+    
+    <!-- THƯ VIỆN BÊN THỨ 3 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- THƯ VIỆN FIREBASE COMPAT (Cho HTML Thuần) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* CẤU HÌNH CSS THUẦN - ĐẢM BẢO GIAO DIỆN KHÔNG BAO GIỜ VỠ KỂ CẢ KHI OFFLINE */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; padding: 24px; gap: 24px; min-height: 100vh; color: #334155; }
-        
-        /* Layout chính nhị phân: Trái (Sidebar) - Phải (Nội dung) */
         .sidebar { width: 320px; background: white; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; }
         .main-content { flex: 1; background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; }
-        
-        /* Khối thông tin học sinh & Tiến trình */
         .profile-card { text-align: center; margin-bottom: 24px; }
         .avatar { width: 80px; height: 80px; background: #eff6ff; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         .progress-box { background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px; }
@@ -24,20 +26,14 @@
         .level-name { font-weight: 700; color: #2563eb; margin-bottom: 8px; font-size: 16px; }
         .bar-bg { height: 10px; background: #e2e8f0; border-radius: 9999px; overflow: hidden; margin-bottom: 8px; }
         .bar-fill { height: 100%; background: #3b82f6; width: 0%; transition: width 0.5s ease; }
-        
-        /* Danh sách chương mục bên trái */
         .topic-section-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
         .level-list { display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
         .level-card { padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s ease; background: white; }
         .level-card:hover { border-color: #3b82f6; background: #f0f7ff; transform: translateX(4px); }
         .level-card.active { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08); font-weight: 600; }
-        
-        /* Header vùng bên phải */
         .main-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: white; }
         .btn-refresh { font-size: 12px; color: #2563eb; border: 1px solid #bfdbfe; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; background: #eff6ff; transition: background 0.2s; }
         .btn-refresh:hover { background: #dbeafe; }
-        
-        /* Không gian làm bài trắc nghiệm */
         .workspace-area { flex: 1; padding: 32px; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; }
         .quiz-container-box { background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); width: 100%; max-width: 768px; }
         .quiz-header-badge { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 16px; }
@@ -45,26 +41,19 @@
         .quiz-opt:hover:not(:disabled) { background: #f1f5f9; border-color: #cbd5e1; color: #1e293b; transform: translateY(-1px); }
         .quiz-opt.correct { background: #ecfdf5 !important; border-color: #10b981 !important; color: #065f46 !important; font-weight: 600; }
         .quiz-opt.wrong { background: #fef2f2 !important; border-color: #ef4444 !important; color: #991b1b !important; font-weight: 600; }
-        
-        /* Phản hồi đáp án */
         .feedback-card { padding: 16px; border-radius: 12px; margin-top: 20px; border-left: 4px solid; }
         .feedback-card.success { background: #f0fdf4; border-left-color: #10b981; color: #14532d; }
         .feedback-card.error { background: #fef2f2; border-left-color: #ef4444; color: #7f1d1d; }
         .btn-next { background: #1e293b; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 12px; float: right; transition: background 0.2s; }
         .btn-next:hover { background: #0f172a; }
-        
-        /* Hiệu ứng xoay Loading câu hỏi */
         .loading-box { text-align: center; padding: 40px 0; }
         .spinner { display: inline-block; width: 32px; height: 32px; border: 4px solid #3b82f6; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* CHATBOT ICON THẦY GIÁO NỔI */
         #chatbot-widget { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
         #chatbot-icon-btn { width: 60px; height: 60px; background: #2563eb; border: none; border-radius: 50%; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
         #chatbot-icon-btn:hover { transform: scale(1.1) rotate(-5deg); background: #1d4ed8; }
         #chatbot-window { width: 380px; height: 500px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 12px 40px rgba(0,0,0,0.12); display: none; flex-direction: column; overflow: hidden; margin-bottom: 16px; }
-        
-        /* Cấu trúc bong bóng chat */
         .chat-header { padding: 16px; background: #2563eb; color: white; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
         #chat-messages-container { flex: 1; overflow-y: auto; padding: 16px; background: #f8fafc; display: flex; flex-direction: column; gap: 12px; }
         .chat-msg { display: flex; flex-direction: column; animation: fadeIn 0.2s ease-out; }
@@ -78,7 +67,6 @@
         .chat-input-area button { background: #2563eb; color: white; border: none; padding: 0 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MODAL ĐĂNG NHẬP MỚI */
         #auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; display: flex; align-items: center; justify-content: center; }
         .auth-box { background: white; padding: 32px; border-radius: 16px; width: 340px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
         .auth-input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; font-family: inherit; font-size: 14px; }
@@ -89,7 +77,7 @@
 </head>
 <body>
 
-    <!-- MODAL ĐĂNG NHẬP (SẼ HIỂN THỊ ĐẦU TIÊN KHI CHƯA CÓ DỮ LIỆU) -->
+    <!-- MODAL ĐĂNG NHẬP -->
     <div id="auth-modal">
         <div class="auth-box">
             <h2 style="margin-bottom: 8px; font-size: 22px; color: #1e293b;">Đăng nhập hệ thống</h2>
@@ -100,12 +88,11 @@
         </div>
     </div>
 
-    <!-- SIDEBAR TRÁI: TIẾN TRÌNH HỌC TẬP -->
+    <!-- SIDEBAR TRÁI -->
     <aside class="sidebar">
         <div>
             <div class="profile-card">
                 <div class="avatar">👨‍🎓</div>
-                <!-- Đã cập nhật ID để có thể đổi tên sau khi đăng nhập -->
                 <h2 id="display-name" style="font-weight: 700; color: #1e293b; font-size: 18px;">Học sinh chưa đăng nhập</h2>
                 <p id="display-class" style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Hệ thống Đánh giá Tiến trình</p>
             </div>
@@ -127,33 +114,24 @@
                 <div id="level-list" class="level-list"></div>
             </div>
         </div>
-        
-        <div style="text-align: center; font-size: 11px; color: #94a3b8; font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-            Đề tài NCKH Ngân hàng đề thông minh
-        </div>
+        <div style="text-align: center; font-size: 11px; color: #94a3b8; font-weight: 500; border-top: 1px solid #e2e8f0; padding-top: 12px;">Đề tài NCKH Ngân hàng đề thông minh</div>
     </aside>
 
-    <!-- KHU VỰC CHÍNH: BÀI TẬP TRẮC NGHIỆM BIÊN SOẠN BỞI AI -->
+    <!-- KHU VỰC CHÍNH -->
     <main class="main-content">
         <header class="main-header">
             <div>
-                <h1 style="font-weight: 700; font-size: 20px; color: #1e293b;">📝 HỆ THỐNG LUYỆN TRẮC NGHIỆM TIN HỌC 10 VÔ HẠN</h1>
-                <p style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Tự động đào sâu kiến thức và tăng độ khó theo năng lực học sinh</p>
+                <h1 style="font-weight: 700; font-size: 20px; color: #1e293b;">📝 HỆ THỐNG LUYỆN TRẮC NGHIỆM TIN HỌC 10</h1>
+                <p style="font-size: 12px; color: #94a3b8; margin-top: 2px;">Tự động đào sâu kiến thức và lưu trữ lên Firebase</p>
             </div>
             <button onclick="generateQuizFromAI()" class="btn-refresh">Đổi câu hỏi khác</button>
         </header>
-
         <div class="workspace-area">
-            <div id="quiz-workspace" style="width: 100%; max-width: 768px;">
-                <div class="loading-box" id="quiz-loading">
-                    <div class="spinner"></div>
-                    <p style="font-size: 14px; color: #64748b; font-weight: 500;">Thầy giáo AI đang soạn câu hỏi phân hóa...</p>
-                </div>
-            </div>
+            <div id="quiz-workspace" style="width: 100%; max-width: 768px;"></div>
         </div>
     </main>
 
-    <!-- WIDGET CHATBOT AI THU NHỎ (ICON THẦY GIÁO NỔI Ở GÓC PHẢI) -->
+    <!-- CHATBOT -->
     <div id="chatbot-widget">
         <div id="chatbot-window">
             <div class="chat-header">
@@ -166,70 +144,78 @@
                 </div>
                 <button onclick="toggleChatWindow()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">×</button>
             </div>
-            
-            <div id="chat-messages-container">
-                <div class="chat-msg bot">
-                    <div style="font-size: 10px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;">Thầy giáo AI</div>
-                    <div class="chat-bubble bot">Chào em! Nếu có phần nào chưa hiểu rõ trong câu hỏi trắc nghiệm, em cứ nhắn vào đây để thầy giảng giải chi tiết nhé!</div>
-                </div>
-            </div>
-            
+            <div id="chat-messages-container"></div>
             <div class="chat-input-area">
                 <input type="text" id="chat-user-input" placeholder="Thầy ơi, giải thích giúp em...">
                 <button onclick="sendChatMessage()">Gửi</button>
             </div>
         </div>
-
         <button id="chatbot-icon-btn" onclick="toggleChatWindow()" title="Hỏi thầy giáo AI">
             <span style="font-size: 30px; color: white;">👨‍🏫</span>
         </button>
     </div>
 
     <script>
-        // CẬP NHẬT HOÀN TOÀN API KEY MỚI CỦA BẠN TRÁNH BỊ BLOCK
+        // ==========================================
+        // 1. CẤU HÌNH FIREBASE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAydBUQ9p7ZdZwnzyQn2zFtxo0wAUghbQM",
+            authDomain: "nckh-5722c.firebaseapp.com",
+            projectId: "nckh-5722c",
+            storageBucket: "nckh-5722c.firebasestorage.app",
+            messagingSenderId: "105437201456",
+            appId: "1:105437201456:web:739bfbce5a560d80e319f5",
+            measurementId: "G-9CW5KHY1XK"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // ==========================================
+        // 2. CẤU HÌNH HỆ THỐNG VÀ API
+        // ==========================================
         const API_KEY = "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"; 
         const URL = "https://api.groq.com/openai/v1/chat/completions";
 
-        let studentState = {
-            xp: 0,
-            consecutiveCorrect: 0, 
-            quizDifficulty: 1,     
-            selectedTopicIndex: 0
-        };
-
+        let studentState = { xp: 0, consecutiveCorrect: 0, quizDifficulty: 1, selectedTopicIndex: 0 };
         const topics = [
             { id: 1, title: "Máy tính và Xã hội tri thức", desc: "Thông tin, Dữ liệu, Thiết bị thông minh, IoT..." },
             { id: 2, title: "Mạng máy tính & Internet", desc: "Mạng máy tính, Điện toán đám mây, Giao thức..." },
-            { id: 3, title: "Đạo đức, Pháp luật & Văn hóa số", desc: "Bản quyền, Giao tiếp an toàn trên không gian mạng..." },
-            { id: 4, title: "Lập trình Python: Biến & Kiểu dữ liệu", desc: "Làm quen Python, Biến, Ép kiểu, print(), input()..." },
-            { id: 5, title: "Cấu trúc Rẽ nhánh Python", desc: "Câu lệnh điều kiện if, if-else, lệnh lồng nhau..." },
-            { id: 6, title: "Cấu trúc Vòng lặp Python", desc: "Vòng lặp for, vòng lặp while, hàm range()..." }
+            { id: 3, title: "Đạo đức, Pháp luật & Văn hóa số", desc: "Bản quyền, Giao tiếp an toàn..." },
+            { id: 4, title: "Lập trình Python: Biến & Kiểu dữ liệu", desc: "Làm quen Python, Biến..." },
+            { id: 5, title: "Cấu trúc Rẽ nhánh Python", desc: "Câu lệnh điều kiện if, if-else..." },
+            { id: 6, title: "Cấu trúc Vòng lặp Python", desc: "Vòng lặp for, vòng lặp while..." }
         ];
-
         const LEVELS_SYSTEM = [
-            { name: "Nhập môn", minXp: 0, maxXp: 150 },
-            { name: "Cơ bản", minXp: 150, maxXp: 400 },
-            { name: "Khá", minXp: 400, maxXp: 900 },
-            { name: "Trung cấp", minXp: 900, maxXp: 1600 },
-            { name: "Chuyên sâu", minXp: 1600, maxXp: 3000 },
-            { name: "Chuyên gia Tin học", minXp: 3000, maxXp: 999999 }
+            { name: "Nhập môn", minXp: 0, maxXp: 150 }, { name: "Cơ bản", minXp: 150, maxXp: 400 },
+            { name: "Khá", minXp: 400, maxXp: 900 }, { name: "Trung cấp", minXp: 900, maxXp: 1600 },
+            { name: "Chuyên sâu", minXp: 1600, maxXp: 3000 }, { name: "Chuyên gia", minXp: 3000, maxXp: 999999 }
         ];
-
         let currentActiveQuizData = null; 
 
         // ==========================================
-        // LOGIC ĐĂNG NHẬP MỚI ĐƯỢC THÊM VÀO
+        // 3. LOGIC ĐĂNG NHẬP KẾT NỐI FIREBASE
         // ==========================================
-        function saveUser() {
+        async function saveUser() {
             const user = document.getElementById('username').value.trim();
             const className = document.getElementById('class-name').value.trim();
             if(user && className) {
-                // Lưu vào LocalStorage
-                localStorage.setItem("user_info", JSON.stringify({user, className}));
-                // Ẩn bảng đăng nhập
+                const userId = user + "_" + className;
+                localStorage.setItem("user_info", JSON.stringify({user, className, userId}));
                 document.getElementById('auth-modal').style.display = 'none';
-                // Đổi tên trên giao diện
                 updateProfileUI(user, className);
+                
+                // TẠO HOẶC CẬP NHẬT TRÊN FIREBASE
+                try {
+                    const userRef = db.collection('users').doc(userId);
+                    const docSnap = await userRef.get();
+                    if (!docSnap.exists) {
+                        await userRef.set({
+                            name: user, className: className, xp: studentState.xp,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                } catch(e) { console.error("Firebase lỗi (Hãy kiểm tra tab Rules Firestore):", e); }
             } else {
                 alert("Vui lòng điền đầy đủ Họ tên và Lớp học!");
             }
@@ -241,87 +227,45 @@
         }
 
         // ==========================================
-        // CÁC HÀM XỬ LÝ CHÍNH CỦA BẠN (GIỮ NGUYÊN)
+        // 4. HÀM TẠO CÂU HỎI & CHẤM ĐIỂM
         // ==========================================
         async function generateQuizFromAI() {
             const container = document.getElementById('quiz-workspace');
-            container.innerHTML = `
-                <div class="loading-box">
-                    <div class="spinner"></div>
-                    <p style="font-size: 14px; color: #64748b; font-weight: 500;">Thầy giáo AI đang biên soạn câu hỏi Cấp độ ${studentState.quizDifficulty}/5...</p>
-                </div>`;
+            container.innerHTML = `<div class="loading-box"><div class="spinner"></div><p style="font-size: 14px; color: #64748b; font-weight: 500;">Thầy giáo AI đang biên soạn câu hỏi...</p></div>`;
 
             const topicName = topics[studentState.selectedTopicIndex].title;
-            let difficultyDesc = "";
-            switch(studentState.quizDifficulty) {
-                case 1: difficultyDesc = "Cấp 1: Nhận biết (Hỏi định nghĩa khái niệm cơ bản)"; break;
-                case 2: difficultyDesc = "Cấp 2: Thông hiểu (Yêu cầu giải thích, phân biệt khái niệm)"; break;
-                case 3: difficultyDesc = "Cấp 3: Vận dụng thấp (Tính toán kết quả hoặc viết đoạn mã Python ngắn)"; break;
-                case 4: difficultyDesc = "Cấp 4: Vận dụng cao (Phân tích tìm lỗi logic, tối ưu hóa thuật toán)"; break;
-                case 5: difficultyDesc = "Cấp 5: Đào sâu bản chất nâng cao (Câu hỏi cực khó về cơ chế vận hành hệ thống)"; break;
-            }
-
-            const promptQuiz = `Bạn là chuyên gia khảo thí môn Tin học lớp 10. Hãy tạo ra ĐÚNG 1 câu hỏi trắc nghiệm khách quan có 4 lựa chọn phản ánh đúng chuyên đề: "${topicName}".
-Yêu cầu độ khó sâu: ${difficultyDesc}.
-
-BẮT BUỘC TRẢ LỜI ĐÚNG ĐỊNH DẠNG JSON SAU (Tuyệt đối không viết thêm lời mở đầu hay kết luận ngoài JSON):
-{
-  "question": "Nội dung câu hỏi cụ thể?",
-  "options": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
-  "correctIndex": 0,
-  "explanation": "Lời giải thích tường tận mang tính sư phạm giúp học sinh hiểu sâu bản chất lý thuyết."
-}`;
+            const promptQuiz = `Tạo ĐÚNG 1 câu trắc nghiệm Tin học 10 chủ đề: "${topicName}". Cấp độ khó: ${studentState.quizDifficulty}/5. BẮT BUỘC TRẢ LỜI ĐỊNH DẠNG JSON: {"question": "...", "options": ["A", "B", "C", "D"], "correctIndex": 0, "explanation": "..."}`;
 
             try {
                 const response = await fetch(URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
-                    body: JSON.stringify({ 
-                        model: "llama-3.3-70b-versatile", 
-                        messages: [{role: "user", content: promptQuiz}],
-                        response_format: { type: "json_object" } 
-                    })
+                    body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role: "user", content: promptQuiz}], response_format: { type: "json_object" } })
                 });
                 const data = await response.json();
-                
                 let rawContent = data.choices[0].message.content.trim();
                 const startIdx = rawContent.indexOf('{');
                 const endIdx = rawContent.lastIndexOf('}');
-                if (startIdx !== -1 && endIdx !== -1) {
-                    rawContent = rawContent.substring(startIdx, endIdx + 1);
-                }
+                if (startIdx !== -1 && endIdx !== -1) rawContent = rawContent.substring(startIdx, endIdx + 1);
 
-                const quizData = JSON.parse(rawContent);
-                currentActiveQuizData = quizData; 
-                renderQuizBox(quizData);
+                currentActiveQuizData = JSON.parse(rawContent);
+                renderQuizBox(currentActiveQuizData);
             } catch (e) {
-                console.error(e);
-                container.innerHTML = `
-                    <div style="background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 24px; border-radius: 16px; text-align: center;">
-                        <p style="font-weight: 700; margin-bottom: 8px;">⚠️ Không thể tải câu hỏi trắc nghiệm từ máy chủ AI!</p>
-                        <p style="font-size: 12px; color: #b91c1c; margin-bottom: 16px;">Vui lòng kiểm tra lại kết nối mạng Internet của máy tính.</p>
-                        <button onclick="generateQuizFromAI()" style="background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer;">Thử tải lại câu hỏi</button>
-                    </div>`;
+                container.innerHTML = `<div style="text-align: center; color: #991b1b;"><p>⚠️ Lỗi mạng! Hãy tải lại câu hỏi.</p><button onclick="generateQuizFromAI()">Thử lại</button></div>`;
             }
         }
 
         function renderQuizBox(quizData) {
             const container = document.getElementById('quiz-workspace');
-            let formattedQuestion = quizData.question.replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code style="background:#f1f5f9; color:#dc2626; padding: 2px 6px; border-radius:4px; font-family:monospace;">$1</code>');
-
+            let formattedQuestion = quizData.question.replace(/\n/g, '<br>');
             let optionsHtml = quizData.options.map((opt, idx) => `
-                <button class="quiz-opt" onclick="checkAnswer(${idx}, ${quizData.correctIndex}, this, '${btoa(unescape(encodeURIComponent(quizData.explanation)))}')">
-                    ${opt}
-                </button>
+                <button class="quiz-opt" onclick="checkAnswer(${idx}, ${quizData.correctIndex}, this, '${btoa(unescape(encodeURIComponent(quizData.explanation)))}')">${opt}</button>
             `).join('');
 
             container.innerHTML = `
                 <div class="quiz-container-box">
-                    <div class="quiz-header-badge">
-                        <span>Chuyên đề: ${topics[studentState.selectedTopicIndex].title}</span>
-                        <span style="color: #d97706; background: #fffbeb; padding: 4px 8px; border-radius: 6px; border: 1px solid #fef3c7;">Độ sâu năng lực: Cấp ${studentState.quizDifficulty}/5</span>
-                    </div>
-                    <div style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 24px; line-height: 1.6;">${formattedQuestion}</div>
+                    <div class="quiz-header-badge"><span>Chuyên đề: ${topics[studentState.selectedTopicIndex].title}</span> <span>Độ sâu: Cấp ${studentState.quizDifficulty}/5</span></div>
+                    <div style="font-size: 18px; font-weight: 600; margin-bottom: 24px;">${formattedQuestion}</div>
                     <div id="quiz-options-zone">${optionsHtml}</div>
                     <div id="quiz-feedback-zone" style="display:none;"></div>
                 </div>`;
@@ -331,140 +275,85 @@ BẮT BUỘC TRẢ LỜI ĐÚNG ĐỊNH DẠNG JSON SAU (Tuyệt đối không v
             const explanation = decodeURIComponent(escape(atob(encodedExplanation)));
             const zone = document.getElementById('quiz-options-zone');
             const buttons = zone.querySelectorAll('.quiz-opt');
-            
             buttons.forEach(btn => btn.disabled = true);
-
             const feedbackZone = document.getElementById('quiz-feedback-zone');
             feedbackZone.style.display = 'block';
 
-            if (selectedIdx === correctIdx) {
+            const isCorrect = (selectedIdx === correctIdx);
+
+            if (isCorrect) {
                 selectedBtn.classList.add('correct');
                 try { confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } }); } catch(e){}
-
                 studentState.xp += 10 * studentState.quizDifficulty; 
                 studentState.consecutiveCorrect += 1;
-
                 if (studentState.consecutiveCorrect >= 2 && studentState.quizDifficulty < 5) {
                     studentState.quizDifficulty += 1;
                     studentState.consecutiveCorrect = 0;
-                    feedbackZone.innerHTML = `
-                        <div class="feedback-card success">
-                            <p style="font-weight: 700; font-size: 15px;">🎉 Xuất sắc! Em đã làm đúng chuỗi câu hỏi. Thầy tự động nâng độ khó bài tập lên Cấp ${studentState.quizDifficulty}!</p>
-                            <p style="font-size: 13px; margin-top: 6px; opacity: 0.9;">${explanation}</p>
-                        </div>`;
-                } else {
-                    feedbackZone.innerHTML = `
-                        <div class="feedback-card success">
-                            <p style="font-weight: 700; font-size: 15px;">🎉 Trả lời chính xác! (+${10 * studentState.quizDifficulty} XP)</p>
-                            <p style="font-size: 13px; margin-top: 4px; opacity: 0.9;">${explanation}</p>
-                        </div>`;
                 }
+                feedbackZone.innerHTML = `<div class="feedback-card success"><p>🎉 Chính xác!</p><p>${explanation}</p></div>`;
             } else {
                 selectedBtn.classList.add('wrong');
                 buttons[correctIdx].classList.add('correct'); 
-
                 studentState.consecutiveCorrect = 0;
-                if (studentState.quizDifficulty > 1) {
-                    studentState.quizDifficulty -= 1;
-                }
-
-                feedbackZone.innerHTML = `
-                    <div class="feedback-card error">
-                        <p style="font-weight: 700; font-size: 15px;">❌ Chưa chính xác rồi em! Thầy hạ độ sâu kiến thức xuống Cấp ${studentState.quizDifficulty} để em vững nền tảng ôn luyện.</p>
-                        <p style="font-size: 13px; margin-top: 4px; opacity: 0.9;">${explanation}</p>
-                        <button onclick="openChatWithContext()" style="margin-top: 12px; background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">❓ Bấm vào đây để hỏi Thầy giáo AI chi tiết hơn</button>
-                    </div>`;
+                if (studentState.quizDifficulty > 1) studentState.quizDifficulty -= 1;
+                feedbackZone.innerHTML = `<div class="feedback-card error"><p>❌ Sai rồi em!</p><p>${explanation}</p></div>`;
             }
-
-            feedbackZone.innerHTML += `
-                <div style="margin-top: 16px; overflow: hidden;">
-                    <button onclick="generateQuizFromAI()" class="btn-next">Làm câu tiếp theo ➔</button>
-                </div>`;
+            feedbackZone.innerHTML += `<div><button onclick="generateQuizFromAI()" class="btn-next">Làm câu tiếp theo ➔</button></div>`;
 
             updateDashboardUI();
             saveStudentProgress();
+
+            // ---------------------------------------------------------
+            // 🔥 PHẦN MỚI: BẮN DỮ LIỆU ĐÚNG/SAI LÊN FIREBASE 🔥
+            // ---------------------------------------------------------
+            try {
+                const userInfoStr = localStorage.getItem("user_info");
+                if (userInfoStr) {
+                    const userInfo = JSON.parse(userInfoStr);
+                    // 1. Lưu vào bảng thống kê lịch sử (history)
+                    db.collection('history').add({
+                        userId: userInfo.userId,
+                        name: userInfo.user,
+                        className: userInfo.className,
+                        topic: topics[studentState.selectedTopicIndex].title,
+                        difficulty: studentState.quizDifficulty,
+                        isCorrect: isCorrect,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    // 2. Cập nhật lại tổng điểm XP
+                    db.collection('users').doc(userInfo.userId).update({ xp: studentState.xp });
+                }
+            } catch (err) { console.log("Chưa thể lưu Firebase:", err); }
         }
 
-        function toggleChatWindow() {
-            const win = document.getElementById('chatbot-window');
-            win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
-        }
-
-        function openChatWithContext() {
-            toggleChatWindow();
-            document.getElementById('chatbot-window').style.display = 'flex';
-            if (currentActiveQuizData) {
-                const input = document.getElementById('chat-user-input');
-                input.value = `Thầy giải thích chuyên sâu hơn giúp em về câu hỏi: "${currentActiveQuizData.question.substring(0, 40)}..." vì sao chọn đáp án "${currentActiveQuizData.options[currentActiveQuizData.correctIndex]}" ạ?`;
-                sendChatMessage();
-            }
-        }
-
-        let chatHistory = [{
-            role: "system",
-            content: "Bạn là Thầy giáo Sư phạm Tin học lớp 10 tại Việt Nam. Chỉ trả lời các thắc mắc lý thuyết ngắn gọn, dễ hiểu, tận tình thúc đẩy tinh thần học tập của học sinh."
-        }];
-
+        // ==========================================
+        // CÁC HÀM CÒN LẠI (CHATBOT, MENU GIAO DIỆN)
+        // ==========================================
+        function toggleChatWindow() { document.getElementById('chatbot-window').style.display = (document.getElementById('chatbot-window').style.display === 'flex') ? 'none' : 'flex'; }
+        
+        let chatHistory = [{role: "system", content: "Bạn là Thầy giáo Sư phạm Tin học lớp 10."}];
         async function sendChatMessage() {
             const input = document.getElementById('chat-user-input');
             const messageText = input.value.trim();
             if (!messageText) return;
-
-            appendChatBubble(messageText, 'user', 'Học sinh');
+            const msgContainer = document.getElementById('chat-messages-container');
+            msgContainer.innerHTML += `<div class="chat-msg user"><div class="chat-bubble user">${messageText}</div></div>`;
             input.value = '';
             chatHistory.push({ role: "user", content: messageText });
             
-            const loadingId = 'loading-' + Date.now();
-            const msgContainer = document.getElementById('chat-messages-container');
-            msgContainer.innerHTML += `
-                <div class="chat-msg bot" id="${loadingId}">
-                    <div style="font-size: 10px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;">Thầy giáo AI</div>
-                    <div class="chat-bubble bot" style="color:#94a3b8; font-style:italic;">Thầy đang soạn câu trả lời giải thích...</div>
-                </div>`;
-            msgContainer.scrollTop = msgContainer.scrollHeight;
-
             try {
                 const response = await fetch(URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
-                    body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: chatHistory, temperature: 0.4 })
+                    method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+                    body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: chatHistory })
                 });
                 const data = await response.json();
-                document.getElementById(loadingId).remove();
-
-                if (data.choices && data.choices.length > 0) {
-                    const reply = data.choices[0].message.content;
-                    chatHistory.push({ role: "assistant", content: reply });
-                    appendChatBubble(reply, 'bot', 'Thầy giáo AI');
-                }
-            } catch(e) {
-                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-                appendChatBubble("❌ Thầy mất kết nối mạng rồi, em nhấn gửi lại nhé!", 'bot', 'Thầy giáo AI');
-            }
+                const reply = data.choices[0].message.content;
+                chatHistory.push({ role: "assistant", content: reply });
+                msgContainer.innerHTML += `<div class="chat-msg bot"><div class="chat-bubble bot">${reply}</div></div>`;
+                msgContainer.scrollTop = msgContainer.scrollHeight;
+            } catch(e) {}
         }
-
-        function appendChatBubble(text, sender, tagLabel) {
-            const msgContainer = document.getElementById('chat-messages-container');
-            const wrapper = document.createElement('div');
-            wrapper.className = `chat-msg ${sender}`;
-            
-            const tag = document.createElement('div');
-            tag.style = 'font-size: 10px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;';
-            tag.textContent = tagLabel;
-
-            const bubble = document.createElement('div');
-            bubble.className = `chat-bubble ${sender}`;
-            bubble.innerHTML = text.replace(/\n/g, '<br>').replace(/`([^`]+)`/g, '<code style="background:#fef3c7; color:#b45309; padding:1px 4px; border-radius:4px;">$1</code>');
-
-            wrapper.appendChild(tag);
-            wrapper.appendChild(bubble);
-            msgContainer.appendChild(wrapper);
-            msgContainer.scrollTop = msgContainer.scrollHeight;
-        }
-
-        document.getElementById('chat-user-input').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') sendChatMessage();
-        });
+        document.getElementById('chat-user-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendChatMessage(); });
 
         function initTopicsMenu() {
             const container = document.getElementById('level-list');
@@ -473,34 +362,24 @@ BẮT BUỘC TRẢ LỜI ĐÚNG ĐỊNH DẠNG JSON SAU (Tuyệt đối không v
                 const activeClass = studentState.selectedTopicIndex === index ? 'active' : '';
                 const el = document.createElement('div');
                 el.className = `level-card ${activeClass}`;
-                el.innerHTML = `<p style="font-size: 13px; color: #1e293b; font-weight: 700; margin-bottom: 2px;">Chương ${topic.id}: ${topic.title}</p>
-                                <p style="font-size: 11px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${topic.desc}</p>`;
-                el.onclick = () => selectTopic(index);
+                el.innerHTML = `<p style="font-size: 13px; font-weight: 700;">Chương ${topic.id}: ${topic.title}</p>`;
+                el.onclick = () => {
+                    studentState.selectedTopicIndex = index;
+                    studentState.quizDifficulty = 1; studentState.consecutiveCorrect = 0;
+                    initTopicsMenu(); generateQuizFromAI(); saveStudentProgress();
+                };
                 container.appendChild(el);
             });
-        }
-
-        function selectTopic(index) {
-            studentState.selectedTopicIndex = index;
-            studentState.quizDifficulty = 1; 
-            studentState.consecutiveCorrect = 0;
-            initTopicsMenu();
-            generateQuizFromAI();
-            saveStudentProgress();
         }
 
         function updateDashboardUI() {
             let currentLevelObj = LEVELS_SYSTEM[0];
             for (let i = 0; i < LEVELS_SYSTEM.length; i++) {
-                if (studentState.xp >= LEVELS_SYSTEM[i].minXp && studentState.xp < LEVELS_SYSTEM[i].maxXp) { 
-                    currentLevelObj = LEVELS_SYSTEM[i]; 
-                    break; 
-                }
+                if (studentState.xp >= LEVELS_SYSTEM[i].minXp && studentState.xp < LEVELS_SYSTEM[i].maxXp) { currentLevelObj = LEVELS_SYSTEM[i]; break; }
             }
             document.getElementById('current-level-name').textContent = currentLevelObj.name;
             document.getElementById('xp-val').textContent = studentState.xp;
-            document.getElementById('exercises-completed').textContent = `Cấp độ câu hỏi: ${studentState.quizDifficulty}/5`;
-            
+            document.getElementById('exercises-completed').textContent = `Cấp độ: ${studentState.quizDifficulty}/5`;
             const pct = ((studentState.xp - currentLevelObj.minXp) / (currentLevelObj.maxXp - currentLevelObj.minXp)) * 100;
             document.getElementById('xp-bar').style.width = `${Math.min(pct, 100)}%`;
             document.getElementById('xp-next-val').textContent = currentLevelObj.maxXp;
@@ -508,27 +387,16 @@ BẮT BUỘC TRẢ LỜI ĐÚNG ĐỊNH DẠNG JSON SAU (Tuyệt đối không v
 
         function saveStudentProgress() { localStorage.setItem("nckh_tinhoc10_v3", JSON.stringify(studentState)); }
 
-        // ==========================================
-        // KHỞI CHẠY KHI MỞ TRANG WEB
-        // ==========================================
         window.onload = function() {
-            // 1. Kiểm tra đã đăng nhập chưa
             const userInfo = localStorage.getItem("user_info");
             if(userInfo) {
-                // Đã đăng nhập -> Ẩn Modal và Cập nhật tên
                 document.getElementById('auth-modal').style.display = 'none';
-                const parsedInfo = JSON.parse(userInfo);
-                updateProfileUI(parsedInfo.user, parsedInfo.className);
+                const parsed = JSON.parse(userInfo);
+                updateProfileUI(parsed.user, parsed.className);
             }
-
-            // 2. Tải tiến trình kinh nghiệm học tập
             const saved = localStorage.getItem("nckh_tinhoc10_v3");
             if (saved) studentState = JSON.parse(saved);
-
-            // 3. Khởi tạo giao diện
-            initTopicsMenu();
-            updateDashboardUI();
-            generateQuizFromAI(); 
+            initTopicsMenu(); updateDashboardUI(); generateQuizFromAI(); 
         };
     </script>
 </body>
