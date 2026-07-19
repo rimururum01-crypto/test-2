@@ -3,74 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ngân hàng Trắc nghiệm Tin học 10</title>
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAydBUQ9p7ZdZwnzyQn2zFtxo0wAUghbQM",
-            authDomain: "nckh-5722c.firebaseapp.com",
-            projectId: "nckh-5722c",
-            storageBucket: "nckh-5722c.firebasestorage.app",
-            messagingSenderId: "105437201456",
-            appId: "1:105437201456:web:739bfbce5a560d80e319f5"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        window.auth = getAuth(app);
-        window.db = getFirestore(app);
-
-        // Logic Đăng nhập
-        window.handleAuth = async () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            try {
-                await signInWithEmailAndPassword(window.auth, email, pass);
-                document.getElementById('auth-modal').style.display = 'none';
-            } catch {
-                await createUserWithEmailAndPassword(window.auth, email, pass);
-                document.getElementById('auth-modal').style.display = 'none';
-            }
-        };
-
-        // Lưu tiến trình vào Firebase
-        window.saveStudentProgress = async () => {
-            if (window.auth.currentUser) {
-                await setDoc(doc(window.db, "users", window.auth.currentUser.uid), {
-                    email: window.auth.currentUser.email,
-                    xp: studentState.xp,
-                    difficulty: studentState.quizDifficulty
-                }, { merge: true });
-            }
-            localStorage.setItem("nckh_tinhoc10_v3", JSON.stringify(studentState));
-            loadLeaderboard(); // Tải lại bảng xếp hạng
-        };
-
-        // Tải bảng xếp hạng
-        window.loadLeaderboard = async () => {
-            const q = query(collection(window.db, "users"), orderBy("xp", "desc"), limit(5));
-            const snapshot = await getDocs(q);
-            let list = document.getElementById('leaderboard-list');
-            list.innerHTML = "";
-            snapshot.forEach(doc => {
-                const d = doc.data();
-                list.innerHTML += `<div style="font-size:12px; padding:5px 0; border-bottom:1px solid #eee;"><b>${d.email.split('@')[0]}</b>: ${d.xp} XP</div>`;
-            });
-        };
-    </script>
-
-    <!-- Giữ nguyên CSS cũ của bạn + thêm Style cho Auth Modal -->
+    <title>Ngân hàng Trắc nghiệm Tin học 10 - NCKH</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-         /* CẤU HÌNH CSS THUẦN - ĐẢM BẢO GIAO DIỆN KHÔNG BAO GIỜ VỠ KỂ CẢ KHI OFFLINE */
+        /* CẤU HÌNH CSS THUẦN - ĐẢM BẢO GIAO DIỆN KHÔNG BAO GIỜ VỠ KỂ CẢ KHI OFFLINE */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; display: flex; padding: 24px; gap: 24px; min-height: 100vh; color: #334155; }
         
         /* Layout chính nhị phân: Trái (Sidebar) - Phải (Nội dung) */
         .sidebar { width: 320px; background: white; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; }
-        .main-content { flex: 1; background: white; border-radius: 16px; b  ox-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; }
+        .main-content { flex: 1; background: white; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; }
         
         /* Khối thông tin học sinh & Tiến trình */
         .profile-card { text-align: center; margin-bottom: 24px; }
@@ -89,13 +33,13 @@
         .level-card.active { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08); font-weight: 600; }
         
         /* Header vùng bên phải */
-        .main-header { padding: 24px; border-b: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: white; }
-        .btn-refresh { font-size: 12px; bg-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; background: #eff6ff; transition: background 0.2s; }
+        .main-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: white; }
+        .btn-refresh { font-size: 12px; color: #2563eb; border: 1px solid #bfdbfe; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; background: #eff6ff; transition: background 0.2s; }
         .btn-refresh:hover { background: #dbeafe; }
         
         /* Không gian làm bài trắc nghiệm */
         .workspace-area { flex: 1; padding: 32px; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; }
-        .quiz-container-box { background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); width: 100%; }
+        .quiz-container-box { background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); width: 100%; max-width: 768px; }
         .quiz-header-badge { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 16px; }
         .quiz-opt { background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 16px 20px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 15px; text-align: left; font-weight: 500; color: #475569; width: 100%; margin-bottom: 12px; }
         .quiz-opt:hover:not(:disabled) { background: #f1f5f9; border-color: #cbd5e1; color: #1e293b; transform: translateY(-1px); }
@@ -111,7 +55,7 @@
         
         /* Hiệu ứng xoay Loading câu hỏi */
         .loading-box { text-align: center; padding: 40px 0; }
-        .spinner { inline-block; width: 32px; height: 32px; border: 4px solid #3b82f6; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px; }
+        .spinner { display: inline-block; width: 32px; height: 32px; border: 4px solid #3b82f6; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
         /* CHATBOT ICON THẦY GIÁO NỔI */
@@ -129,36 +73,41 @@
         .chat-bubble { padding: 12px 16px; border-radius: 16px; max-width: 85%; font-size: 14px; line-height: 1.5; word-break: break-word; }
         .chat-bubble.bot { background: #e2e8f0; color: #1e293b; border-top-left-radius: 4px; }
         .chat-bubble.user { background: #2563eb; color: white; border-top-right-radius: 4px; }
-        .chat-input-area { padding: 12px; border-top: 1px solid #e2e8f0; bg: white; display: flex; gap: 8px; background: white; }
+        .chat-input-area { padding: 12px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; background: white; }
         .chat-input-area input { flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 10px; outline: none; font-size: 14px; }
         .chat-input-area button { background: #2563eb; color: white; border: none; padding: 0 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-        /* [COPY TOÀN BỘ CSS CŨ CỦA BẠN VÀO ĐÂY] */
-        #auth-modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; display:flex; align-items:center; justify-content:center; }
-        .auth-box { background:white; padding:30px; border-radius:15px; width:320px; }
+
+        /* MODAL ĐĂNG NHẬP MỚI */
+        #auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; display: flex; align-items: center; justify-content: center; }
+        .auth-box { background: white; padding: 32px; border-radius: 16px; width: 340px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+        .auth-input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; font-family: inherit; font-size: 14px; }
+        .auth-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .auth-btn { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 16px; transition: background 0.2s; font-size: 15px; }
+        .auth-btn:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
 
-    <!-- Modal Đăng nhập -->
+    <!-- MODAL ĐĂNG NHẬP (SẼ HIỂN THỊ ĐẦU TIÊN KHI CHƯA CÓ DỮ LIỆU) -->
     <div id="auth-modal">
         <div class="auth-box">
-            <h2>Đăng nhập</h2>
-            <input type="email" id="email" placeholder="Email" style="width:100%; margin:10px 0; padding:10px;">
-            <input type="password" id="password" placeholder="Mật khẩu" style="width:100%; margin:10px 0; padding:10px;">
-            <button onclick="handleAuth()" style="width:100%; padding:10px; background:#2563eb; color:white; border:none; cursor:pointer;">Đăng nhập / Đăng ký</button>
+            <h2 style="margin-bottom: 8px; font-size: 22px; color: #1e293b;">Đăng nhập hệ thống</h2>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Vui lòng nhập thông tin để lưu lại tiến trình học tập của em</p>
+            <input type="text" id="username" class="auth-input" placeholder="Họ và tên học sinh...">
+            <input type="text" id="class-name" class="auth-input" placeholder="Lớp (VD: 10A1)...">
+            <button class="auth-btn" onclick="saveUser()">Bắt đầu học ngay</button>
         </div>
     </div>
 
-    <!-- [GIỮ NGUYÊN PHẦN CÒN LẠI CỦA BODY] -->
-    <!-- Thêm phần này vào sidebar để hiện BXH -->
-    <div class="sidebar">
-        <aside class="sidebar">
+    <!-- SIDEBAR TRÁI: TIẾN TRÌNH HỌC TẬP -->
+    <aside class="sidebar">
         <div>
             <div class="profile-card">
                 <div class="avatar">👨‍🎓</div>
-                <h2 style="font-weight: 700; color: #1e293b; font-size: 18px;">Học sinh Lớp 10</h2>
-                <p style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Hệ thống Đánh giá Tiến trình</p>
+                <!-- Đã cập nhật ID để có thể đổi tên sau khi đăng nhập -->
+                <h2 id="display-name" style="font-weight: 700; color: #1e293b; font-size: 18px;">Học sinh chưa đăng nhập</h2>
+                <p id="display-class" style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Hệ thống Đánh giá Tiến trình</p>
             </div>
 
             <div class="progress-box">
@@ -167,7 +116,7 @@
                 <div class="bar-bg">
                     <div id="xp-bar" class="bar-fill"></div>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #475569; font-medium: 500;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #475569; font-weight: 500;">
                     <span><span id="xp-val">0</span> / <span id="xp-next-val">300</span> XP</span>
                     <span id="exercises-completed" style="color: #059669; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; font-size: 11px;">Cấp độ câu hỏi: 1/5</span>
                 </div>
@@ -195,7 +144,7 @@
         </header>
 
         <div class="workspace-area">
-            <div id="quiz-workspace" style="width: 100%; max-w: 768px; max-width: 768px;">
+            <div id="quiz-workspace" style="width: 100%; max-width: 768px;">
                 <div class="loading-box" id="quiz-loading">
                     <div class="spinner"></div>
                     <p style="font-size: 14px; color: #64748b; font-weight: 500;">Thầy giáo AI đang soạn câu hỏi phân hóa...</p>
@@ -268,7 +217,32 @@
 
         let currentActiveQuizData = null; 
 
-        // HÀM GỌI AI SOẠN ĐỀ: BỘ TRÍCH XUẤT JSON CHỐNG SẬP TUYỆT ĐỐI
+        // ==========================================
+        // LOGIC ĐĂNG NHẬP MỚI ĐƯỢC THÊM VÀO
+        // ==========================================
+        function saveUser() {
+            const user = document.getElementById('username').value.trim();
+            const className = document.getElementById('class-name').value.trim();
+            if(user && className) {
+                // Lưu vào LocalStorage
+                localStorage.setItem("user_info", JSON.stringify({user, className}));
+                // Ẩn bảng đăng nhập
+                document.getElementById('auth-modal').style.display = 'none';
+                // Đổi tên trên giao diện
+                updateProfileUI(user, className);
+            } else {
+                alert("Vui lòng điền đầy đủ Họ tên và Lớp học!");
+            }
+        }
+
+        function updateProfileUI(name, className) {
+            document.getElementById('display-name').textContent = name;
+            document.getElementById('display-class').textContent = "Lớp " + className;
+        }
+
+        // ==========================================
+        // CÁC HÀM XỬ LÝ CHÍNH CỦA BẠN (GIỮ NGUYÊN)
+        // ==========================================
         async function generateQuizFromAI() {
             const container = document.getElementById('quiz-workspace');
             container.innerHTML = `
@@ -411,7 +385,6 @@ BẮT BUỘC TRẢ LỜI ĐÚNG ĐỊNH DẠNG JSON SAU (Tuyệt đối không v
             saveStudentProgress();
         }
 
-        // HÀM ĐIỀU KHIỂN CHATBOT NỔI THU GỌN
         function toggleChatWindow() {
             const win = document.getElementById('chatbot-window');
             win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
@@ -493,7 +466,6 @@ BẮT BUỘC TRẢ LỜI ĐÚNG ĐỊNH DẠNG JSON SAU (Tuyệt đối không v
             if (e.key === 'Enter') sendChatMessage();
         });
 
-        // ĐỒNG BỘ DỮ LIỆU GIAO DIỆN HỆ THỐNG
         function initTopicsMenu() {
             const container = document.getElementById('level-list');
             container.innerHTML = '';
@@ -536,33 +508,27 @@ BẮT BUỘC TRẢ LỜI ĐÚNG ĐỊNH DẠNG JSON SAU (Tuyệt đối không v
 
         function saveStudentProgress() { localStorage.setItem("nckh_tinhoc10_v3", JSON.stringify(studentState)); }
 
+        // ==========================================
+        // KHỞI CHẠY KHI MỞ TRANG WEB
+        // ==========================================
         window.onload = function() {
+            // 1. Kiểm tra đã đăng nhập chưa
+            const userInfo = localStorage.getItem("user_info");
+            if(userInfo) {
+                // Đã đăng nhập -> Ẩn Modal và Cập nhật tên
+                document.getElementById('auth-modal').style.display = 'none';
+                const parsedInfo = JSON.parse(userInfo);
+                updateProfileUI(parsedInfo.user, parsedInfo.className);
+            }
+
+            // 2. Tải tiến trình kinh nghiệm học tập
             const saved = localStorage.getItem("nckh_tinhoc10_v3");
             if (saved) studentState = JSON.parse(saved);
+
+            // 3. Khởi tạo giao diện
             initTopicsMenu();
             updateDashboardUI();
             generateQuizFromAI(); 
-        };
-    </script>
-        <!-- ... code cũ ... -->
-        <div id="leaderboard-container" style="margin-top:20px; padding:10px; background:#f0f7ff; border-radius:10px;">
-            <h4 style="font-size:12px; color:#2563eb;">🏆 BẢNG XẾP HẠNG</h4>
-            <div id="leaderboard-list"></div>
-        </div>
-    </div>
-
-    <script>
-        // [CÁC BIẾN VÀ HÀM CŨ CỦA BẠN]
-        // Lưu ý: Thay hàm saveStudentProgress cũ bằng hàm mới đã khai báo ở đầu trang.
-        
-        window.onload = function() {
-            // ... code cũ ...
-            onAuthStateChanged(window.auth, (user) => {
-                if (user) {
-                    document.getElementById('auth-modal').style.display = 'none';
-                    loadLeaderboard();
-                }
-            });
         };
     </script>
 </body>
