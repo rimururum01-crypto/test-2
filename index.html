@@ -8,7 +8,7 @@
     <!-- THƯ VIỆN BÊN THỨ 3 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
-    <!-- THƯ VIỆN FIREBASE COMPAT (Cho HTML Thuần) -->
+    <!-- THƯ VIỆN FIREBASE COMPAT -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
@@ -81,7 +81,7 @@
     <div id="auth-modal">
         <div class="auth-box">
             <h2 style="margin-bottom: 8px; font-size: 22px; color: #1e293b;">Đăng nhập hệ thống</h2>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Vui lòng nhập thông tin để lưu lại tiến trình học tập của em</p>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Vui lòng nhập thông tin để hệ thống ghi nhận điểm</p>
             <input type="text" id="username" class="auth-input" placeholder="Họ và tên học sinh...">
             <input type="text" id="class-name" class="auth-input" placeholder="Lớp (VD: 10A1)...">
             <button class="auth-btn" onclick="saveUser()">Bắt đầu học ngay</button>
@@ -93,7 +93,7 @@
         <div>
             <div class="profile-card">
                 <div class="avatar">👨‍🎓</div>
-                <h2 id="display-name" style="font-weight: 700; color: #1e293b; font-size: 18px;">Học sinh chưa đăng nhập</h2>
+                <h2 id="display-name" style="font-weight: 700; color: #1e293b; font-size: 18px;">Chưa đăng nhập</h2>
                 <p id="display-class" style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Hệ thống Đánh giá Tiến trình</p>
             </div>
 
@@ -104,13 +104,13 @@
                     <div id="xp-bar" class="bar-fill"></div>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 12px; color: #475569; font-weight: 500;">
-                    <span><span id="xp-val">0</span> / <span id="xp-next-val">300</span> XP</span>
-                    <span id="exercises-completed" style="color: #059669; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; font-size: 11px;">Cấp độ câu hỏi: 1/5</span>
+                    <span><span id="xp-val">0</span> / <span id="xp-next-val">150</span> XP</span>
+                    <span id="exercises-completed" style="color: #059669; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; font-size: 11px;">Cấp độ: 1/5</span>
                 </div>
             </div>
 
             <div>
-                <p class="topic-section-title">📂 Ngân hàng câu hỏi theo Chương</p>
+                <p class="topic-section-title">📂 Ngân hàng câu hỏi</p>
                 <div id="level-list" class="level-list"></div>
             </div>
         </div>
@@ -127,7 +127,9 @@
             <button onclick="generateQuizFromAI()" class="btn-refresh">Đổi câu hỏi khác</button>
         </header>
         <div class="workspace-area">
-            <div id="quiz-workspace" style="width: 100%; max-width: 768px;"></div>
+            <div id="quiz-workspace" style="width: 100%; max-width: 768px;">
+                <!-- Nội dung câu hỏi sẽ load ở đây -->
+            </div>
         </div>
     </main>
 
@@ -172,19 +174,22 @@
         const db = firebase.firestore();
 
         // ==========================================
-        // 2. CẤU HÌNH HỆ THỐNG VÀ API
+        // 2. CẤU HÌNH BIẾN HỆ THỐNG & API
         // ==========================================
         const API_KEY = "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"; 
         const URL = "https://api.groq.com/openai/v1/chat/completions";
 
+        // BIẾN QUẢN LÝ SESSION (Dữ liệu sẽ mất khi F5)
+        let currentUser = null; 
+        
         let studentState = { xp: 0, consecutiveCorrect: 0, quizDifficulty: 1, selectedTopicIndex: 0 };
         const topics = [
-            { id: 1, title: "Máy tính và Xã hội tri thức", desc: "Thông tin, Dữ liệu, Thiết bị thông minh, IoT..." },
-            { id: 2, title: "Mạng máy tính & Internet", desc: "Mạng máy tính, Điện toán đám mây, Giao thức..." },
-            { id: 3, title: "Đạo đức, Pháp luật & Văn hóa số", desc: "Bản quyền, Giao tiếp an toàn..." },
-            { id: 4, title: "Lập trình Python: Biến & Kiểu dữ liệu", desc: "Làm quen Python, Biến..." },
-            { id: 5, title: "Cấu trúc Rẽ nhánh Python", desc: "Câu lệnh điều kiện if, if-else..." },
-            { id: 6, title: "Cấu trúc Vòng lặp Python", desc: "Vòng lặp for, vòng lặp while..." }
+            { id: 1, title: "Máy tính và Xã hội tri thức" },
+            { id: 2, title: "Mạng máy tính & Internet" },
+            { id: 3, title: "Đạo đức, Pháp luật & Văn hóa số" },
+            { id: 4, title: "Lập trình Python: Biến & Kiểu dữ liệu" },
+            { id: 5, title: "Cấu trúc Rẽ nhánh Python" },
+            { id: 6, title: "Cấu trúc Vòng lặp Python" }
         ];
         const LEVELS_SYSTEM = [
             { name: "Nhập môn", minXp: 0, maxXp: 150 }, { name: "Cơ bản", minXp: 150, maxXp: 400 },
@@ -194,7 +199,7 @@
         let currentActiveQuizData = null; 
 
         // ==========================================
-        // 3. LOGIC ĐĂNG NHẬP KẾT NỐI FIREBASE
+        // 3. LOGIC ĐĂNG NHẬP SESSION (KHÔNG LOCALSTORAGE)
         // ==========================================
         async function saveUser() {
             const user = document.getElementById('username').value.trim();
@@ -208,8 +213,11 @@
 
                 const userId = user + "_" + className;
                 
+                // Lưu vào biến tạm thời, đóng tab/F5 là mất
+                currentUser = { user, className, userId };
+                
                 try {
-                    // Đẩy dữ liệu vào bảng "users" chuẩn xác
+                    // Đẩy dữ liệu vào bảng "users"
                     const userRef = db.collection('users').doc(userId);
                     await userRef.set({
                         name: user, 
@@ -218,9 +226,9 @@
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
                     
-                    localStorage.setItem("user_info", JSON.stringify({user, className, userId}));
                     document.getElementById('auth-modal').style.display = 'none';
                     updateProfileUI(user, className);
+                    generateQuizFromAI(); // Bắt đầu load câu hỏi sau khi đăng nhập
                     
                 } catch(e) { 
                     console.error("Lỗi kết nối Firebase:", e);
@@ -240,9 +248,11 @@
         }
 
         // ==========================================
-        // 4. HÀM TẠO CÂU HỎI & CHẤM ĐIỂM ĐỒNG BỘ
+        // 4. HÀM TẠO CÂU HỎI BẰNG AI
         // ==========================================
         async function generateQuizFromAI() {
+            if (!currentUser) return; // Nếu chưa đăng nhập thì không tạo câu hỏi
+
             const container = document.getElementById('quiz-workspace');
             container.innerHTML = `<div class="loading-box"><div class="spinner"></div><p style="font-size: 14px; color: #64748b; font-weight: 500;">Thầy giáo AI đang biên soạn câu hỏi...</p></div>`;
 
@@ -264,7 +274,7 @@
                 currentActiveQuizData = JSON.parse(rawContent);
                 renderQuizBox(currentActiveQuizData);
             } catch (e) {
-                container.innerHTML = `<div style="text-align: center; color: #991b1b;"><p>⚠️ Lỗi mạng! Hãy tải lại câu hỏi.</p><button onclick="generateQuizFromAI()">Thử lại</button></div>`;
+                container.innerHTML = `<div style="text-align: center; color: #991b1b;"><p>⚠️ Lỗi mạng! Hãy tải lại câu hỏi.</p><button onclick="generateQuizFromAI()" class="btn-refresh" style="margin-top:10px;">Thử lại</button></div>`;
             }
         }
 
@@ -284,7 +294,17 @@
                 </div>`;
         }
 
-        function checkAnswer(selectedIdx, correctIdx, selectedBtn, encodedExplanation) {
+        // ==========================================
+        // 5. CHẤM ĐIỂM VÀ ĐỒNG BỘ DASHBOARD
+        // ==========================================
+        async function checkAnswer(selectedIdx, correctIdx, selectedBtn, encodedExplanation) {
+            // KIỂM TRA SESSION TRƯỚC KHI CHẤM ĐIỂM
+            if (!currentUser) {
+                alert("Phiên làm việc đã hết hạn. Vui lòng tải lại trang để đăng nhập.");
+                location.reload(); 
+                return;
+            }
+
             const explanation = decodeURIComponent(escape(atob(encodedExplanation)));
             const zone = document.getElementById('quiz-options-zone');
             const buttons = zone.querySelectorAll('.quiz-opt');
@@ -314,34 +334,63 @@
             feedbackZone.innerHTML += `<div><button onclick="generateQuizFromAI()" class="btn-next">Làm câu tiếp theo ➔</button></div>`;
 
             updateDashboardUI();
-            saveStudentProgress();
 
-            // 🔥 BẮN BÁO CÁO VỀ DASHBOARD GIÁO VIÊN 🔥
+            // ĐỒNG BỘ VỀ FIREBASE CHO GIÁO VIÊN
             try {
-                const userInfoStr = localStorage.getItem("user_info");
-                if (userInfoStr) {
-                    const userInfo = JSON.parse(userInfoStr);
-                    // 1. Lưu vào bảng history cho bảng thống kê của thầy cô
-                    db.collection('history').add({
-                        userId: userInfo.userId,
-                        name: userInfo.user,
-                        className: userInfo.className,
-                        topic: topics[studentState.selectedTopicIndex].title,
-                        difficulty: studentState.quizDifficulty,
-                        isCorrect: isCorrect,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    // 2. Cập nhật lại tổng điểm XP
-                    db.collection('users').doc(userInfo.userId).update({ xp: studentState.xp });
-                }
-            } catch (err) { console.log("Lỗi đồng bộ Firebase:", err); }
+                // 1. Ghi vào bảng history để hiện lịch sử trả lời
+                await db.collection('history').add({
+                    userId: currentUser.userId,
+                    name: currentUser.user,
+                    className: currentUser.className,
+                    topic: topics[studentState.selectedTopicIndex].title,
+                    difficulty: studentState.quizDifficulty,
+                    isCorrect: isCorrect,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                // 2. Cập nhật tổng điểm XP trong bảng users
+                await db.collection('users').doc(currentUser.userId).update({ xp: studentState.xp });
+            } catch (err) { 
+                console.log("Lỗi đồng bộ Firebase:", err); 
+            }
         }
 
         // ==========================================
-        // CÁC HÀM CÒN LẠI (CHATBOT, MENU GIAO DIỆN)
+        // CÁC HÀM GIAO DIỆN KHÁC (UI, CHATBOT)
         // ==========================================
+        function initTopicsMenu() {
+            const container = document.getElementById('level-list');
+            container.innerHTML = '';
+            topics.forEach((topic, index) => {
+                const activeClass = studentState.selectedTopicIndex === index ? 'active' : '';
+                const el = document.createElement('div');
+                el.className = `level-card ${activeClass}`;
+                el.innerHTML = `<p style="font-size: 13px; font-weight: 700;">Chương ${topic.id}: ${topic.title}</p>`;
+                el.onclick = () => {
+                    studentState.selectedTopicIndex = index;
+                    studentState.quizDifficulty = 1; 
+                    studentState.consecutiveCorrect = 0;
+                    initTopicsMenu(); 
+                    if(currentUser) generateQuizFromAI(); 
+                };
+                container.appendChild(el);
+            });
+        }
+
+        function updateDashboardUI() {
+            let currentLevelObj = LEVELS_SYSTEM[0];
+            for (let i = 0; i < LEVELS_SYSTEM.length; i++) {
+                if (studentState.xp >= LEVELS_SYSTEM[i].minXp && studentState.xp < LEVELS_SYSTEM[i].maxXp) { currentLevelObj = LEVELS_SYSTEM[i]; break; }
+            }
+            document.getElementById('current-level-name').textContent = currentLevelObj.name;
+            document.getElementById('xp-val').textContent = studentState.xp;
+            document.getElementById('exercises-completed').textContent = `Cấp độ: ${studentState.quizDifficulty}/5`;
+            const pct = ((studentState.xp - currentLevelObj.minXp) / (currentLevelObj.maxXp - currentLevelObj.minXp)) * 100;
+            document.getElementById('xp-bar').style.width = `${Math.min(pct, 100)}%`;
+            document.getElementById('xp-next-val').textContent = currentLevelObj.maxXp;
+        }
+
+        // Chatbot Logic
         function toggleChatWindow() { document.getElementById('chatbot-window').style.display = (document.getElementById('chatbot-window').style.display === 'flex') ? 'none' : 'flex'; }
-        
         let chatHistory = [{role: "system", content: "Bạn là Thầy giáo Sư phạm Tin học lớp 10."}];
         async function sendChatMessage() {
             const input = document.getElementById('chat-user-input');
@@ -366,48 +415,11 @@
         }
         document.getElementById('chat-user-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendChatMessage(); });
 
-        function initTopicsMenu() {
-            const container = document.getElementById('level-list');
-            container.innerHTML = '';
-            topics.forEach((topic, index) => {
-                const activeClass = studentState.selectedTopicIndex === index ? 'active' : '';
-                const el = document.createElement('div');
-                el.className = `level-card ${activeClass}`;
-                el.innerHTML = `<p style="font-size: 13px; font-weight: 700;">Chương ${topic.id}: ${topic.title}</p>`;
-                el.onclick = () => {
-                    studentState.selectedTopicIndex = index;
-                    studentState.quizDifficulty = 1; studentState.consecutiveCorrect = 0;
-                    initTopicsMenu(); generateQuizFromAI(); saveStudentProgress();
-                };
-                container.appendChild(el);
-            });
-        }
-
-        function updateDashboardUI() {
-            let currentLevelObj = LEVELS_SYSTEM[0];
-            for (let i = 0; i < LEVELS_SYSTEM.length; i++) {
-                if (studentState.xp >= LEVELS_SYSTEM[i].minXp && studentState.xp < LEVELS_SYSTEM[i].maxXp) { currentLevelObj = LEVELS_SYSTEM[i]; break; }
-            }
-            document.getElementById('current-level-name').textContent = currentLevelObj.name;
-            document.getElementById('xp-val').textContent = studentState.xp;
-            document.getElementById('exercises-completed').textContent = `Cấp độ: ${studentState.quizDifficulty}/5`;
-            const pct = ((studentState.xp - currentLevelObj.minXp) / (currentLevelObj.maxXp - currentLevelObj.minXp)) * 100;
-            document.getElementById('xp-bar').style.width = `${Math.min(pct, 100)}%`;
-            document.getElementById('xp-next-val').textContent = currentLevelObj.maxXp;
-        }
-
-        function saveStudentProgress() { localStorage.setItem("nckh_tinhoc10_v3", JSON.stringify(studentState)); }
-
+        // LUÔN HIỆN MODAL KHI LOAD TRANG
         window.onload = function() {
-            const userInfo = localStorage.getItem("user_info");
-            if(userInfo) {
-                document.getElementById('auth-modal').style.display = 'none';
-                const parsed = JSON.parse(userInfo);
-                updateProfileUI(parsed.user, parsed.className);
-            }
-            const saved = localStorage.getItem("nckh_tinhoc10_v3");
-            if (saved) studentState = JSON.parse(saved);
-            initTopicsMenu(); updateDashboardUI(); generateQuizFromAI(); 
+            document.getElementById('auth-modal').style.display = 'flex';
+            initTopicsMenu(); 
+            updateDashboardUI();
         };
     </script>
 </body>
