@@ -43,39 +43,49 @@
             display: flex; justify-content: space-between; align-items: center;
             background: var(--glass-bg); backdrop-filter: blur(16px);
             padding: 24px 32px; border-radius: 24px; border: 1px solid white;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04); margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04); margin-bottom: 24px;
             gap: 20px; flex-wrap: wrap;
         }
         .logo-zone h1 { font-weight: 800; font-size: 24px; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .logo-zone p { font-size: 13px; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
 
-        /* BỘ LỌC LỚP HỌC */
         .filter-zone { display: flex; align-items: center; gap: 12px; }
         .filter-label { font-size: 14px; font-weight: 700; color: var(--text-main); }
         .class-select { padding: 10px 16px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 14px; font-weight: 700; color: var(--text-main); outline: none; background: white; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .class-select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-glow); }
 
-        /* THỐNG KÊ TỔNG QUAN (KPI CARDS) */
+        /* TABS NAVIGATION */
+        .tabs { 
+            display: flex; gap: 12px; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 16px; overflow-x: auto; 
+        }
+        .tab-btn { 
+            background: transparent; border: none; font-size: 16px; font-weight: 700; color: var(--text-muted); 
+            padding: 12px 24px; border-radius: 12px; cursor: pointer; transition: all 0.3s; white-space: nowrap; 
+        }
+        .tab-btn:hover { background: var(--primary-glow); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 16px var(--primary-glow); }
+        
+        .tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* KPI & CHARTS */
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .kpi-card { 
             background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid white;
             padding: 24px; border-radius: 20px; box-shadow: 0 8px 24px rgba(15,23,42,0.02);
-            position: relative; overflow: hidden; display: flex; align-items: center; gap: 20px;
+            display: flex; align-items: center; gap: 20px;
         }
         .kpi-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
         .kpi-data h3 { font-size: 28px; font-weight: 800; line-height: 1.2; }
         .kpi-data p { font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* KHU VỰC ĐỒ THỊ ANLYTICS */
         .analytics-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-bottom: 30px; }
         @media (max-width: 1024px) { .analytics-grid { grid-template-columns: 1fr; } }
-        .chart-box { 
-            background: white; border-radius: 24px; padding: 28px; border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.01);
-        }
-        .chart-box h2 { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .chart-box { background: white; border-radius: 24px; padding: 28px; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.01); }
+        .chart-box h2 { font-size: 18px; font-weight: 800; margin-bottom: 20px; }
 
-        /* BẢNG DANH SÁCH HỌC SINH TẬN TÂM */
+        /* TABLE */
         .data-section { background: white; border-radius: 24px; border: 1px solid var(--border-color); padding: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.01); }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .section-header h2 { font-size: 18px; font-weight: 800; }
@@ -86,9 +96,7 @@
         td { padding: 18px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
         tr:hover td { background-color: #f8fafc; }
 
-        /* BADGES */
-        .badge { inline-size: max-content; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
-        .badge-theta { background: rgba(139, 92, 246, 0.1); color: var(--secondary); border: 1px solid rgba(139, 92, 246, 0.2); }
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
         .badge-alert { background: rgba(244, 63, 94, 0.1); color: var(--error); border: 1px solid rgba(244, 63, 94, 0.2); animation: pulseAlert 2s infinite; }
         .badge-stable { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
         @keyframes pulseAlert { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
@@ -96,16 +104,27 @@
         .btn-detail { background: #f1f5f9; border: none; color: var(--primary); font-weight: 700; padding: 8px 14px; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
         .btn-detail:hover { background: var(--primary); color: white; }
 
-        /* MODAL XEM CHI TIẾT LỘ TRÌNH HỌC SINH */
+        /* MODAL & TIMELINE */
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: white; width: 100%; max-width: 850px; max-height: 85vh; border-radius: 28px; padding: 32px; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; }
+        .modal-content { background: white; width: 100%; max-width: 900px; max-height: 90vh; border-radius: 28px; padding: 32px; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; }
         .close-modal { position: absolute; top: 24px; right: 24px; background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* TIMELINE NHẬT KÝ LÀM BÀI */
         .timeline { margin-top: 24px; position: relative; border-left: 2px solid #e2e8f0; padding-left: 20px; }
         .timeline-item { position: relative; margin-bottom: 24px; }
         .timeline-dot { position: absolute; left: -27px; top: 4px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 2px currentColor; }
-        .timeline-card { background: #f8fafc; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0; }
+        .timeline-card { background: #f8fafc; padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; }
+        
+        .answer-box {
+            display: flex;
+            gap: 16px;
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -118,7 +137,6 @@
                 <p>Hệ thống Giám sát & Phân tích Năng lực Thích ứng của Học sinh theo thời gian thực</p>
             </div>
             
-            <!-- BỘ LỌC CHIA LỚP -->
             <div class="filter-zone">
                 <span class="filter-label">Chọn phạm vi xem:</span>
                 <select id="class-filter" class="class-select" onchange="onClassFilterChange()">
@@ -127,68 +145,79 @@
             </div>
         </header>
 
-        <!-- KPI CARDS -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:#e0f2fe; color:var(--primary)">👥</div>
-                <div class="kpi-data"><h3 id="total-students">0</h3><p>Tổng số Học sinh</p></div>
+        <!-- TABS ĐIỀU HƯỚNG -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-overview', this)">📊 Thống kê Tổng quan</button>
+            <button class="tab-btn" onclick="switchTab('tab-students', this)">📋 Quản lý Học sinh</button>
+        </div>
+
+        <!-- TAB 1: THỐNG KÊ TỔNG QUAN -->
+        <div id="tab-overview" class="tab-content active">
+            <!-- KPI CARDS -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:#e0f2fe; color:var(--primary)">👥</div>
+                    <div class="kpi-data"><h3 id="total-students">0</h3><p>Tổng số Học sinh</p></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:#f3e8ff; color:var(--secondary)">📊</div>
+                    <div class="kpi-data"><h3 id="avg-theta">0.00</h3><p>Năng lực trung bình</p></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:#fee2e2; color:var(--error)">⚠️</div>
+                    <div class="kpi-data"><h3 id="alert-count">0</h3><p>Học sinh cần trợ giúp</p></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:#fef3c7; color:var(--warning)">🔥</div>
+                    <div class="kpi-data"><h3 id="top-streak">0</h3><p>Chuỗi học tập cao nhất</p></div>
+                </div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:#f3e8ff; color:var(--secondary)">📊</div>
-                <div class="kpi-data"><h3 id="avg-theta">0.00</h3><p>Năng lực trung bình</p></div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:#fee2e2; color:var(--error)">⚠️</div>
-                <div class="kpi-data"><h3 id="alert-count">0</h3><p>Học sinh cần trợ giúp</p></div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background:#fef3c7; color:var(--warning)">🔥</div>
-                <div class="kpi-data"><h3 id="top-streak">0</h3><p>Chuỗi học tập cao nhất</p></div>
+
+            <!-- ANALYTICS CHARTS -->
+            <div class="analytics-grid">
+                <div class="chart-box">
+                    <h2>📈 Bản đồ Phân phối Năng lực Nền tảng của Lớp</h2>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="classDistributionChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h2>⚠️ Điểm Nóng Kiến Thức (Tỷ lệ sai)</h2>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="topicErrorChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- ANALYTICS CHARTS -->
-        <div class="analytics-grid">
-            <div class="chart-box">
-                <h2>📈 Bản đồ Phân phối Năng lực Nền tảng của Lớp</h2>
-                <div style="position: relative; height: 280px; width: 100%;">
-                    <canvas id="classDistributionChart"></canvas>
+        <!-- TAB 2: QUẢN LÝ HỌC SINH -->
+        <div id="tab-students" class="tab-content">
+            <div class="data-section">
+                <div class="section-header">
+                    <h2>📋 Danh sách Tiến trình Thực tế của Từng Học Sinh</h2>
                 </div>
-            </div>
-            <div class="chart-box">
-                <h2>⚠️ Điểm Nóng Kiến Thức (Tỷ lệ làm sai)</h2>
-                <div style="position: relative; height: 280px; width: 100%;">
-                    <canvas id="topicErrorChart"></canvas>
+                <div class="student-table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tên Học Sinh</th>
+                                <th>Phân Lớp</th>
+                                <th>Tổng Điểm (XP)</th>
+                                <th>Năng Lực</th>
+                                <th>Chuỗi Ngày</th>
+                                <th>Trạng Thái</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-table-body">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                    Đang đồng bộ dữ liệu...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-        </div>
-
-        <!-- BẢNG DANH SÁCH CHI TIẾT TẬN TÂM -->
-        <div class="data-section">
-            <div class="section-header">
-                <h2>📋 Danh sách Tiến trình Thực tế của Từng Học Sinh</h2>
-            </div>
-            <div class="student-table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tên Học Sinh</th>
-                            <th>Phân Lớp</th>
-                            <th>Tổng Tích Lũy (XP)</th>
-                            <th>Năng Lực Hiện Tại</th>
-                            <th>Chuỗi Đều Đặn</th>
-                            <th>Trạng Thái Sư Phạm</th>
-                            <th>Hành Động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="student-table-body">
-                        <tr>
-                            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                                Đang đồng bộ hóa dữ liệu từ đám mây Firebase Firestore...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
@@ -206,9 +235,14 @@
     </div>
 
     <script>
-        // ==========================================
-        // 1. CẤU HÌNH KẾT NỐI DATABASE FIRESTORE
-        // ==========================================
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyAydBUQ9p7ZdZwnzyQn2zFtxo0wAUghbQM",
             authDomain: "nckh-5722c.firebaseapp.com",
@@ -220,57 +254,35 @@
 
         let distributionChart = null;
         let errorChart = null;
-        let globalRawStudents = []; // Lưu trữ mảng gốc chưa lọc để chuyển đổi nhanh
-        let currentSelectedClass = "ALL"; // Lớp đang chọn lọc mặc định
+        let globalRawStudents = []; 
+        let currentSelectedClass = "ALL";
 
-        // ==========================================
-        // 2. LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC (REAL-TIME SNAPSHOT)
-        // ==========================================
         function startRealTimeSync() {
             db.collection("students").onSnapshot((snapshot) => {
                 let tempStudents = [];
                 let classSet = new Set();
-
                 snapshot.forEach((doc) => {
                     let data = doc.data();
                     data.id = doc.id;
                     tempStudents.push(data);
-                    
-                    if (data.className) {
-                        classSet.add(data.className.trim());
-                    }
+                    if (data.className) classSet.add(data.className.trim());
                 });
-
                 globalRawStudents = tempStudents;
-                
-                // Tự động nhận diện danh sách các lớp thực tế đang hoạt động để nạp vào Menu Lọc
                 updateClassFilterDropdown(classSet);
-
-                // Tiến hành tính toán và render theo lớp đã chọn
                 processAndRenderData();
-
-            }, (error) => {
-                console.error("Lỗi đồng bộ dữ liệu: ", error);
             });
         }
 
-        // Tạo danh mục các lớp tự động dựa trên học sinh đang có trong Database
         function updateClassFilterDropdown(classSet) {
             const selectEl = document.getElementById('class-filter');
-            // Giữ lại lựa chọn đầu tiên (Tất cả)
             const currentValue = selectEl.value;
             selectEl.innerHTML = '<option value="ALL">🌐 Toàn bộ học sinh</option>';
-            
-            // Sắp xếp tên lớp theo thứ tự chữ cái A-Z
-            const sortedClasses = Array.from(classSet).sort();
-            sortedClasses.forEach(className => {
+            Array.from(classSet).sort().forEach(className => {
                 const opt = document.createElement('option');
                 opt.value = className;
                 opt.textContent = `🏫 Lớp ${className}`;
                 selectEl.appendChild(opt);
             });
-
-            // Giữ nguyên trạng thái chọn của giáo viên trước đó nếu lớp đó vẫn tồn tại
             if (classSet.has(currentValue) || currentValue === "ALL") {
                 selectEl.value = currentValue;
                 currentSelectedClass = currentValue;
@@ -282,126 +294,169 @@
             processAndRenderData();
         }
 
-        // ==========================================
-        // 3. XỬ LÝ LỌC DỮ LIỆU & RENDER TOÀN DIỆN
-        // ==========================================
         function processAndRenderData() {
-            // Thực hiện bộ lọc lớp học
             let filteredStudents = globalRawStudents;
             if (currentSelectedClass !== "ALL") {
                 filteredStudents = globalRawStudents.filter(s => s.className && s.className.trim() === currentSelectedClass);
             }
 
-            // Tính toán số liệu thống kê cho riêng lớp được lọc
-            let totalTheta = 0;
-            let alertCount = 0;
-            let maxStreak = 0;
-
+            let totalTheta = 0, alertCount = 0, maxStreak = 0;
             filteredStudents.forEach(s => {
                 totalTheta += s.theta || 0;
                 if ((s.theta || 0) < -0.8) alertCount++;
                 if ((s.streak || 0) > maxStreak) maxStreak = s.streak;
             });
 
-            // Cập nhật thông số hiển thị KPI nhanh lên màn hình
             document.getElementById('total-students').textContent = filteredStudents.length;
             document.getElementById('avg-theta').textContent = filteredStudents.length ? (totalTheta / filteredStudents.length).toFixed(2) : "0.00";
             document.getElementById('alert-count').textContent = alertCount;
             document.getElementById('top-streak').textContent = maxStreak;
 
-            // Đổ dữ liệu vào bảng danh sách học sinh
             renderStudentTable(filteredStudents);
-
-            // Cập nhật đồ thị phân hóa theo danh sách mới
             updateCharts(filteredStudents);
         }
 
         function renderStudentTable(students) {
             const tbody = document.getElementById('student-table-body');
             if (students.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">Hiện tại chưa có học sinh thuộc lớp này đăng nhập làm bài.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">Hiện tại chưa có học sinh thuộc lớp này.</td></tr>`;
                 return;
             }
 
-            // Học sinh năng lực yếu được ưu tiên xếp lên đầu để giáo viên hỗ trợ kịp thời
             students.sort((a, b) => (a.theta || 0) - (b.theta || 0));
 
             tbody.innerHTML = students.map(student => {
                 const theta = student.theta || 0;
-                let pedagogicalStatus = `<span class="badge badge-stable">👍 Đang phát triển tốt</span>`;
+                let status = `<span class="badge badge-stable">👍 Đang phát triển tốt</span>`;
+                if (theta < -0.8) status = `<span class="badge badge-alert">⚠️ Hổng kiến thức cơ bản</span>`;
                 
-                if (theta < -0.8) {
-                    pedagogicalStatus = `<span class="badge badge-alert">⚠️ Hổng kiến thức cơ bản</span>`;
-                } else if (theta > 1.2) {
-                    pedagogicalStatus = `<span class="badge badge-theta" style="background:rgba(16,185,129,0.1); color:var(--success); border-color:var(--success);">🌟 Tư duy xuất sắc</span>`;
-                }
-
                 return `
                     <tr>
-                        <td style="font-weight: 700; color: var(--text-main);">${student.fullName}</td>
-                        <td><span style="background:#f1f5f9; padding:4px 8px; border-radius:6px; font-weight:600; font-size:13px;">10 / Lớp ${student.className}</span></td>
+                        <td style="font-weight: 700;">${student.fullName}</td>
+                        <td><span style="background:#f1f5f9; padding:4px 8px; border-radius:6px; font-weight:600; font-size:13px;">Lớp ${student.className}</span></td>
                         <td style="font-weight: 600; color: var(--primary);">${student.xp} XP</td>
                         <td><strong style="font-size:15px;">${theta.toFixed(2)}</strong></td>
                         <td>🔥 ${student.streak || 1} ngày</td>
-                        <td>${pedagogicalStatus}</td>
-                        <td>
-                            <button class="btn-detail" onclick="openStudentModal('${student.id}', '${student.fullName}', '${student.className}')">Phân tích lỗi ➔</button>
-                        </td>
+                        <td>${status}</td>
+                        <td><button class="btn-detail" onclick="openStudentModal('${student.id}', '${student.fullName}', '${student.className}')">Phân tích lỗi ➔</button></td>
                     </tr>
                 `;
             }).join('');
         }
 
         // ==========================================
-        // 4. TRUY XUẤT NHẬT KÝ CHI TIẾT CỦA TỪNG HỌC SINH
+        // XỬ LÝ HIỂN THỊ ĐÁP ÁN TRONG NHẬT KÝ
         // ==========================================
         async function openStudentModal(userId, fullName, className) {
             document.getElementById('modal-student-name').textContent = "Học sinh: " + fullName;
-            document.getElementById('modal-student-meta').textContent = `Lớp: ${className} | Mã định danh hệ thống: ${userId}`;
+            document.getElementById('modal-student-meta').textContent = `Lớp: ${className} | Mã định danh: ${userId}`;
             
             const timelineContainer = document.getElementById('modal-timeline');
-            timelineContainer.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">Đang trích xuất dữ liệu liên kết từ đám mây...</p>`;
-            
+            timelineContainer.innerHTML = `<p style="text-align:center; padding: 20px;">Đang tải dữ liệu...</p>`;
             document.getElementById('detail-modal').style.display = 'flex';
 
             try {
                 const historySnapshot = await db.collection("students").doc(userId).collection("history")
-                                                .orderBy("timestamp", "desc").limit(15).get();
+                                                .orderBy("timestamp", "desc").limit(20).get();
 
                 if (historySnapshot.empty) {
-                    timelineContainer.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding: 20px;">Học sinh này chưa thực hiện câu hỏi trắc nghiệm nào từ hệ thống AI.</p>`;
+                    timelineContainer.innerHTML = `<p style="text-align:center; padding: 20px;">Học sinh chưa làm bài.</p>`;
                     return;
                 }
 
                 timelineContainer.innerHTML = historySnapshot.docs.map(doc => {
                     const h = doc.data();
-                    const isCorrect = h.status === "Đúng";
-                    const dotColor = isCorrect ? 'var(--success)' : 'var(--error)';
-                    const statusText = isCorrect ? '✅ Trả lời ĐÚNG' : '❌ Trả lời SAI';
-                    
+                    let dotColor, statusText, cardBorderColor, detailHtml = '';
+                    const labels = ['A', 'B', 'C', 'D'];
+
+                    // 1. DẠNG CÂU HỎI ĐÚNG / SAI
+                    if (h.type === "true_false") {
+                        const correctCount = h.correctCount || 0;
+                        if (correctCount === 4) { statusText = "✅ Tuyệt vời (Đúng 4/4 ý)"; dotColor = 'var(--success)'; cardBorderColor = 'var(--success)'; }
+                        else if (correctCount === 3) { statusText = "☑️ Khá tốt (Đúng 3/4 ý)"; dotColor = 'var(--primary)'; cardBorderColor = 'var(--primary)'; }
+                        else if (correctCount === 2) { statusText = "⚠️ Cố gắng (Đúng 2/4 ý)"; dotColor = 'var(--warning)'; cardBorderColor = 'var(--warning)'; }
+                        else { statusText = "❌ Sai nhiều (Đúng <2/4 ý)"; dotColor = 'var(--error)'; cardBorderColor = 'var(--error)'; }
+
+                        let optionsHtml = '<div style="margin-top: 12px; display: flex; flex-direction: column; gap: 6px;">';
+                        const choices = h.studentChoices || [];
+                        const statements = h.options || ["Ý a", "Ý b", "Ý c", "Ý d"]; // fallback nếu có
+                        
+                        statements.forEach((stmt, idx) => {
+                            let sChoice = choices[idx] || "Chưa chọn";
+                            optionsHtml += `
+                                <div style="font-size: 13px; background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+                                    <span><strong>${labels[idx]}.</strong> ${stmt}</span>
+                                    <span style="font-weight:700; color:${sChoice === 'Đúng' ? 'var(--success)' : (sChoice === 'Sai' ? 'var(--error)' : 'var(--text-muted)')};">${sChoice}</span>
+                                </div>`;
+                        });
+                        optionsHtml += '</div>';
+                        detailHtml = optionsHtml;
+                    } 
+                    // 2. DẠNG CÂU HỎI TRẮC NGHIỆM THƯỜNG (4 ĐÁP ÁN)
+                    else {
+                        const isCorrect = h.status === "Đúng";
+                        dotColor = isCorrect ? 'var(--success)' : 'var(--error)';
+                        cardBorderColor = dotColor;
+                        statusText = isCorrect ? '✅ Trả lời ĐÚNG' : '❌ Trả lời SAI';
+
+                        // Nếu có lưu mảng options đầy đủ văn bản đáp án A, B, C, D
+                        if (h.options && Array.isArray(h.options)) {
+                            let gridHtml = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">';
+                            h.options.forEach((optText, idx) => {
+                                let optLabel = labels[idx];
+                                let isStudentPick = (h.selectedAnswer === optLabel || h.selectedAnswer === `Đáp án ${optLabel}`);
+                                let isCorrectPick = (h.correctAnswer === optLabel || h.correctAnswer === `Đáp án ${optLabel}`);
+
+                                let bgStyle = "background: white;";
+                                let borderStyle = "border: 1px solid #e2e8f0;";
+                                if (isCorrectPick) {
+                                    bgStyle = "background: #ecfdf5;";
+                                    borderStyle = "border: 1px solid #10b981; color: #047857;";
+                                } else if (isStudentPick && !isCorrectPick) {
+                                    bgStyle = "background: #fef2f2;";
+                                    borderStyle = "border: 1px solid #f43f5e; color: #be123c;";
+                                }
+
+                                gridHtml += `
+                                    <div style="font-size: 13px; padding: 8px 12px; border-radius: 8px; ${bgStyle} ${borderStyle}">
+                                        <strong>${optLabel}.</strong> ${optText}
+                                        ${isStudentPick ? '<div style="font-size:11px; font-weight:700; margin-top:2px; color:var(--error);">👉 Học sinh chọn</div>' : ''}
+                                        ${isCorrectPick ? '<div style="font-size:11px; font-weight:700; margin-top:2px; color:var(--success);">✔ Đáp án chuẩn</div>' : ''}
+                                    </div>`;
+                            });
+                            gridHtml += '</div>';
+                            detailHtml = gridHtml;
+                        } else {
+                            // Dự phòng khi Firebase chỉ lưu dạng nhãn ngắn gọn
+                            let studentAns = h.selectedAnswer ? (h.selectedAnswer.startsWith("Đáp án") ? h.selectedAnswer : `Đáp án ${h.selectedAnswer}`) : "Không chọn";
+                            let correctAns = h.correctAnswer ? (h.correctAnswer.startsWith("Đáp án") ? h.correctAnswer : `Đáp án ${h.correctAnswer}`) : "Chưa cập nhật";
+
+                            detailHtml = `
+                                <div class="answer-box">
+                                    <div><span style="color:var(--text-muted);">Học sinh chọn:</span> <strong style="color:${isCorrect ? 'var(--success)' : 'var(--error)'};">${studentAns}</strong></div>
+                                    <div style="border-left: 2px solid #e2e8f0; padding-left: 16px;"><span style="color:var(--text-muted);">Đáp án chuẩn:</span> <strong style="color:var(--success);">${correctAns}</strong></div>
+                                </div>`;
+                        }
+                    }
+
                     return `
                         <div class="timeline-item">
                             <div class="timeline-dot" style="color: ${dotColor}"></div>
-                            <div class="timeline-card" style="${!isCorrect ? 'border-left: 4px solid var(--error);' : 'border-left: 4px solid var(--success);'}">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:12px; color:var(--text-muted); font-weight:700;">
-                                    <span>📂 ${h.topic}</span>
-                                    <span style="color:${dotColor}">${statusText} (Độ khó câu hỏi b = ${parseFloat(h.difficultyB).toFixed(2)})</span>
+                            <div class="timeline-card" style="border-left: 4px solid ${cardBorderColor};">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:13px; color:var(--text-muted); font-weight:700;">
+                                    <span>📂 ${h.topic || 'Chưa phân loại'}</span>
+                                    <span style="color:${dotColor}">${statusText} (Độ khó b = ${parseFloat(h.difficultyB || 0).toFixed(2)})</span>
                                 </div>
-                                <div style="font-weight:700; font-size:14px; margin-bottom:8px; color:var(--text-main);">${h.question}</div>
-                                <div style="font-size:13px; font-weight:600;">
-                                    <span style="color:var(--text-muted);">Lựa chọn của học sinh:</span> 
-                                    <span style="color:${isCorrect ? 'var(--success)' : 'var(--error)'}; background:white; padding:2px 6px; border-radius:4px; border:1px solid #e2e8f0; margin-right:10px;">Đáp án ${h.selectedAnswer}</span>
-                                    <span style="color:var(--text-muted);">Đáp án chuẩn:</span> 
-                                    <span style="color:var(--success); background:white; padding:2px 6px; border-radius:4px; border:1px solid #e2e8f0;">Đáp án ${h.correctAnswer}</span>
-                                </div>
+                                <div style="font-weight:700; font-size:15px; color:var(--text-main); line-height: 1.5;">${h.question}</div>
+                                ${detailHtml}
                             </div>
                         </div>
                     `;
                 }).join('');
 
             } catch (err) {
-                console.error("Lỗi khi đọc lịch sử:", err);
-                timelineContainer.innerHTML = `<p style="color:var(--error); text-align:center; padding: 20px;">Không thể kết nối tải dữ liệu lịch sử bài làm.</p>`;
+                console.error("Lỗi:", err);
+                timelineContainer.innerHTML = `<p style="color:var(--error); text-align:center;">Lỗi tải dữ liệu lịch sử.</p>`;
             }
         }
 
@@ -409,48 +464,26 @@
             document.getElementById('detail-modal').style.display = 'none';
         }
 
-        // ==========================================
-        // 5. PHÁT HỌA BIỂU ĐỒ TRỰC QUAN (CHART.JS)
-        // ==========================================
         function updateCharts(students) {
             let labels = students.map(s => s.fullName);
             let thetaValues = students.map(s => s.theta || 0);
 
-            // Cập nhật biểu đồ cột phân chia năng lực
             if (distributionChart) {
                 distributionChart.data.labels = labels;
                 distributionChart.data.datasets[0].data = thetaValues;
-                // Đổi màu cột động: đỏ nếu học sinh yếu, xanh nếu học sinh ổn định
                 distributionChart.data.datasets[0].backgroundColor = thetaValues.map(v => v < -0.8 ? 'rgba(244, 63, 94, 0.7)' : 'rgba(59, 130, 246, 0.7)');
                 distributionChart.update();
             } else {
                 const ctx1 = document.getElementById('classDistributionChart').getContext('2d');
                 distributionChart = new Chart(ctx1, {
                     type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Chỉ số Theta (Năng lực thực)',
-                            data: thetaValues,
-                            backgroundColor: thetaValues.map(v => v < -0.8 ? 'rgba(244, 63, 94, 0.7)' : 'rgba(59, 130, 246, 0.7)'),
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { min: -3.0, max: 3.0, grid: { color: '#e2e8f0' } },
-                            x: { grid: { display: false } }
-                        }
-                    }
+                    data: { labels: labels, datasets: [{ data: thetaValues, backgroundColor: thetaValues.map(v => v < -0.8 ? 'rgba(244, 63, 94, 0.7)' : 'rgba(59, 130, 246, 0.7)'), borderRadius: 6 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: -3.0, max: 3.0 } } }
                 });
             }
 
-            // Khởi tạo đồ thị Radar mạng nhện phân tích điểm yếu (Dữ liệu mô phỏng tổng quan)
-            let topicsSample = ["Máy tính & Xã hội", "Mạng & Internet", "Đạo đức số", "Python: Biến số", "Python: Rẽ nhánh", "Python: Vòng lặp"];
-            let errorRatesSample = [15, 30, 10, 45, 60, 55]; 
+            let topicsSample = ["Máy tính & Xã hội", "Mạng & Internet", "Đạo đức số", "Python: Biến số", "Python: Rẽ nhánh"];
+            let errorRatesSample = [15, 30, 10, 45, 60]; 
 
             if (errorChart) {
                 errorChart.update();
@@ -458,22 +491,8 @@
                 const ctx2 = document.getElementById('topicErrorChart').getContext('2d');
                 errorChart = new Chart(ctx2, {
                     type: 'radar',
-                    data: {
-                        labels: topicsSample,
-                        datasets: [{
-                            label: 'Tỷ lệ trả lời sai (%)',
-                            data: errorRatesSample,
-                            backgroundColor: 'rgba(139, 92, 246, 0.2)',
-                            borderColor: '#8b5cf6',
-                            borderWidth: 2,
-                            pointBackgroundColor: '#8b5cf6'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: { r: { min: 0, max: 100, ticks: { display: false } } }
-                    }
+                    data: { labels: topicsSample, datasets: [{ label: 'Tỷ lệ trả lời sai (%)', data: errorRatesSample, backgroundColor: 'rgba(139, 92, 246, 0.2)', borderColor: '#8b5cf6', borderWidth: 2 }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { r: { min: 0, max: 100, ticks: { display: false } } } }
                 });
             }
         }
