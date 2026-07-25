@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Adaptive Learning - NCKH Tin Học 10</title>
+    <title>NCKH Tin Học 10</title>
     
     <!-- THƯ VIỆN BÊN THỨ 3 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -251,12 +251,12 @@
                 <div class="header-left-zone">
                     <button class="btn-toggle-sidebar" onclick="toggleSidebarSystem()">☰</button>
                     <div>
-                        <h1 class="app-title">HỆ THỐNG LUYỆN THI TIN HỌC 10</h1>
+                        <h1 class="app-title">HỆ THỐNG CÂU HỎI TIN HỌC 10</h1>
                         <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500;">Công nghệ AI & Đo lường IRT Tự động</p>
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 16px;">
-                    <button id="exam-mode-btn" class="mode-toggle-btn" onclick="toggleExamMode()">⏱️ Chế độ Luyện tập</button>
+                    <button id="exam-mode-btn" class="mode-toggle-btn" onclick="toggleExamMode()">⏱️ Test mode</button>
                 </div>
             </header>
             
@@ -315,7 +315,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        const API_KEY = "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"; 
+        const API_KEY = "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"; 
         const URL = "https://api.groq.com/openai/v1/chat/completions";
 
         let currentUser = null; 
