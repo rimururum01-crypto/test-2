@@ -26,6 +26,70 @@
             --sidebar-width: 280px;
         }
 
+        /* DARK MODE VARIABLES & OVERRIDES */
+        body.dark-mode {
+            --bg-body: #090d16;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+            --primary-light: #1e3a8a;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+        }
+
+        body.dark-mode .sidebar,
+        body.dark-mode .top-header,
+        body.dark-mode .card-box,
+        body.dark-mode .welcome-card,
+        body.dark-mode .data-table,
+        body.dark-mode .topic-card,
+        body.dark-mode .quiz-container-box,
+        body.dark-mode .auth-box,
+        body.dark-mode .chat-bubble.bot,
+        body.dark-mode .chat-input-area,
+        body.dark-mode .skill-card-mini,
+        body.dark-mode .user-profile-mini,
+        body.dark-mode .btn-icon,
+        body.dark-mode .tf-row,
+        body.dark-mode .tf-label,
+        body.dark-mode .auth-input {
+            background-color: #111827 !important;
+            color: var(--text-main) !important;
+            border-color: #374151 !important;
+        }
+
+        body.dark-mode .data-table th {
+            background-color: #1f2937 !important;
+            color: #60a5fa !important;
+        }
+
+        body.dark-mode .data-table tr:hover {
+            background-color: #1f2937 !important;
+        }
+
+        body.dark-mode .topic-card:hover {
+            background-color: #1f2937 !important;
+            border-color: var(--primary) !important;
+        }
+
+        body.dark-mode .quiz-opt {
+            background-color: #111827 !important;
+            color: #f1f5f9 !important;
+            border-color: #374151 !important;
+        }
+
+        body.dark-mode .quiz-opt::before {
+            background-color: #1f2937 !important;
+            color: #94a3b8 !important;
+        }
+
+        body.dark-mode .heatmap-cell {
+            background: #1f2937;
+        }
+        body.dark-mode .heatmap-cell.lvl-1 { background: #1e3a8a; }
+        body.dark-mode .heatmap-cell.lvl-2 { background: #1d4ed8; }
+        body.dark-mode .heatmap-cell.lvl-3 { background: #2563eb; }
+        body.dark-mode .heatmap-cell.lvl-4 { background: #3b82f6; }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         
         body { 
@@ -34,6 +98,7 @@
             background-size: 24px 24px;
             color: var(--text-main); 
             min-height: 100vh; display: flex; overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -44,6 +109,7 @@
         .sidebar {
             width: var(--sidebar-width); background: white; border-right: 1px solid var(--border-color);
             display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; box-shadow: 2px 0 12px rgba(0,0,0,0.02);
+            transition: background 0.3s, border-color 0.3s;
         }
         
         .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px; }
@@ -65,7 +131,7 @@
         /* ================= MAIN CONTENT ================= */
         .main-wrapper { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; min-height: 100vh; width: calc(100% - var(--sidebar-width)); }
 
-        .top-header { height: 70px; background: white; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 32px; position: sticky; top: 0; z-index: 90; }
+        .top-header { height: 70px; background: white; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 32px; position: sticky; top: 0; z-index: 90; transition: background 0.3s, border-color 0.3s; }
         .breadcrumb { font-size: 14px; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
         .breadcrumb span { color: var(--text-main); font-weight: 700; }
         .header-actions { display: flex; align-items: center; gap: 16px; }
@@ -91,17 +157,17 @@
         .data-table tr:hover { background: var(--bg-body); }
 
         /* DASHBOARD & CARDS */
-        .welcome-card { background: white; border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .welcome-card { background: white; border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); transition: background 0.3s, border-color 0.3s; }
         .grid-2-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
         
-        .card-box { background: white; border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .card-box { background: white; border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); transition: background 0.3s, border-color 0.3s; }
         .card-box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .card-box-title { font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
 
         /* SKILLS SUMMARY GRID (Cập nhật cho 6 chủ đề) */
         .skills-grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
         @media (max-width: 1024px) { .skills-grid-6 { grid-template-columns: repeat(2, 1fr); } }
-        .skill-card-mini { background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; position: relative; border-left: 4px solid var(--primary); }
+        .skill-card-mini { background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; position: relative; border-left: 4px solid var(--primary); transition: background 0.3s, border-color 0.3s; }
         .skill-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; font-weight: 700; gap: 8px; }
         .skill-score-display { font-size: 24px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: baseline; gap: 4px; }
         .status-badge-mini { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
@@ -132,7 +198,7 @@
         .quiz-header-wrapper { width: 100%; max-width: 850px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .session-progress { font-size: 15px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 8px 16px; border-radius: 99px; display: flex; align-items: center; gap: 12px; }
         .timer-badge { background: var(--error-bg); color: var(--error); padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 6px; }
-        .quiz-container-box { background: white; border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.04); width: 100%; max-width: 850px; position: relative; }
+        .quiz-container-box { background: white; border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.04); width: 100%; max-width: 850px; position: relative; transition: background 0.3s, border-color 0.3s; }
         
         .quiz-opt { background: white; border: 2px solid var(--border-color); padding: 16px 20px; border-radius: 14px; cursor: pointer; transition: all 0.2s; font-size: 15px; font-weight: 600; color: #334155; width: 100%; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; text-align: left; }
         .quiz-opt::before { content: attr(data-prefix); background: var(--bg-body); color: var(--text-muted); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 800; font-size: 14px; flex-shrink: 0; }
@@ -143,11 +209,11 @@
         .quiz-opt.wrong::before { background: var(--error) !important; color: white !important; }
 
         .tf-container { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .tf-row { display: flex; justify-content: space-between; align-items: center; background: white; padding: 16px 20px; border: 2px solid var(--border-color); border-radius: 14px; gap: 20px; }
+        .tf-row { display: flex; justify-content: space-between; align-items: center; background: white; padding: 16px 20px; border: 2px solid var(--border-color); border-radius: 14px; gap: 20px; transition: background 0.3s, border-color 0.3s; }
         .tf-text { flex: 1; font-size: 15px; font-weight: 500; color: #334155; line-height: 1.5; }
         .tf-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .tf-radio { display: none; }
-        .tf-label { padding: 10px 20px; border-radius: 8px; border: 2px solid var(--border-color); cursor: pointer; font-weight: 700; font-size: 14px; color: var(--text-muted); background: white; }
+        .tf-label { padding: 10px 20px; border-radius: 8px; border: 2px solid var(--border-color); cursor: pointer; font-weight: 700; font-size: 14px; color: var(--text-muted); background: white; transition: background 0.3s, border-color 0.3s; }
         .tf-radio:checked + .tf-label.btn-true { background: var(--success); border-color: var(--success); color: white; }
         .tf-radio:checked + .tf-label.btn-false { background: var(--error); border-color: var(--error); color: white; }
         
@@ -169,21 +235,21 @@
 
         /* MODAL & CHATBOT */
         #auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 16px; }
-        .auth-box { background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
-        .auth-input { width: 100%; padding: 14px 16px; margin: 10px 0; border: 2px solid var(--border-color); border-radius: 12px; outline: none; font-size: 15px; font-weight: 500; }
+        .auth-box { background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transition: background 0.3s, border-color 0.3s; }
+        .auth-input { width: 100%; padding: 14px 16px; margin: 10px 0; border: 2px solid var(--border-color); border-radius: 12px; outline: none; font-size: 15px; font-weight: 500; background: white; color: var(--text-main); }
         .auth-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 20px; }
 
         #chatbot-widget { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
         #chatbot-icon-btn { width: 60px; height: 60px; background: var(--primary); border: none; border-radius: 50%; box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; }
-        #chatbot-window { width: 360px; max-width: calc(100vw - 32px); height: 500px; background: white; border: 1px solid var(--border-color); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); display: none; flex-direction: column; overflow: hidden; margin-bottom: 20px; }
+        #chatbot-window { width: 360px; max-width: calc(100vw - 32px); height: 500px; background: white; border: 1px solid var(--border-color); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); display: none; flex-direction: column; overflow: hidden; margin-bottom: 20px; transition: background 0.3s, border-color 0.3s; }
         .chat-header { padding: 16px 20px; background: var(--text-main); color: white; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
         #chat-messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; background: var(--bg-body); }
         .chat-msg { display: flex; flex-direction: column; }
         .chat-bubble { padding: 12px 16px; border-radius: 16px; max-width: 85%; font-size: 14px; line-height: 1.5; }
         .chat-bubble.bot { background: white; color: var(--text-main); border: 1px solid var(--border-color); }
         .chat-bubble.user { background: var(--primary); color: white; }
-        .chat-input-area { padding: 12px; display: flex; gap: 10px; background: white; border-top: 1px solid var(--border-color); }
-        .chat-input-area input { flex: 1; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 10px; outline: none; background: var(--bg-body); }
+        .chat-input-area { padding: 12px; display: flex; gap: 10px; background: white; border-top: 1px solid var(--border-color); transition: background 0.3s, border-color 0.3s; }
+        .chat-input-area input { flex: 1; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 10px; outline: none; background: var(--bg-body); color: var(--text-main); }
         .chat-input-area button { background: var(--primary); color: white; border: none; width: 40px; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
@@ -245,6 +311,7 @@
                 Trang chủ <span>></span> Tiến trình học tập
             </div>
             <div class="header-actions">
+                <button class="btn-icon" title="Chế độ Tối/Sáng" onclick="toggleDarkMode()"><i class="fa-solid fa-moon" id="dark-mode-icon"></i></button>
                 <button class="btn-icon" title="Cài đặt"><i class="fa-solid fa-gear"></i></button>
                 <div class="user-profile-mini">
                     <div class="user-avatar" id="avatar-char">N</div>
@@ -418,6 +485,19 @@
         // Giả lập điểm số của học sinh hiện tại (phục vụ NCKH / Lộ trình)
         const mockTopicScores = [8.5, 9.0, 6.5, 5.0, 7.2, 4.5];
 
+        // CHUYỂN ĐỔI CHẾ ĐỘ TỐI / SÁNG
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('dark-mode-icon');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.className = "fa-solid fa-sun";
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.className = "fa-solid fa-moon";
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
         function switchView(viewId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -496,7 +576,6 @@
             const container = document.getElementById('progress-mini-skills');
             if(!container) return;
             let html = '';
-            // Render 4 chủ đề đầu tiên cho gọn view progress
             for(let i=0; i<4; i++) {
                 const s = mockTopicScores[i];
                 let status = s >= 8.5 ? "target" : (s >= 6.8 ? "approaching" : "below");
@@ -553,7 +632,7 @@
                 let borderColor = s >= 8.5 ? "#10b981" : (s >= 6.8 ? "#f59e0b" : "#ef4444");
                 
                 gridHtml += `
-                    <div class="skill-card-mini" style="background:white; border:1px solid var(--border-color); border-radius:16px; padding:20px; border-left:4px solid ${borderColor};">
+                    <div class="skill-card-mini" style="border-left-color: ${borderColor};">
                         <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:8px;">
                             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;" title="${t.title}">${t.title}</span>
                             <span class="status-badge-mini ${status}">${statusText}</span>
@@ -592,7 +671,7 @@
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>Ngày làm $\\downarrow$</th>
+                                <th>Ngày làm</th>
                                 ${tableHeaders}
                                 <th style="text-align: center;">Trung bình</th>
                             </tr>
@@ -614,7 +693,7 @@
                     new Chart(ctx, {
                         type: 'radar',
                         data: {
-                            labels: topics.map(t => 'CĐ ' + t.id), // Viết tắt để tránh tràn viền chart
+                            labels: topics.map(t => 'CĐ ' + t.id),
                             datasets: [{
                                 label: 'Điểm số',
                                 data: mockTopicScores,
@@ -646,7 +725,7 @@
             const container = document.getElementById('pathway-content-analysis');
             
             let pathwayHtml = `
-                <div style="background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 24px;">
+                <div class="card-box" style="margin-bottom: 24px;">
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--text-main);"><i class="fa-solid fa-route" style="color: var(--primary);"></i> Phân tích Điểm yếu & Gợi ý ôn tập</h3>
                     <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">Hệ thống phát hiện các chủ đề bạn đang dưới ngưỡng an toàn (Màu đỏ). Click vào nút để chuyển đến không gian luyện tập cải thiện tương ứng.</p>
                     <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
@@ -654,9 +733,9 @@
             
             topics.forEach((t, index) => {
                 const score = mockTopicScores[index];
-                if(score < 6.8) { // Yếu hoặc Tiệm cận dưới
+                if(score < 6.8) {
                     pathwayHtml += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--error); border-radius: 12px; background: var(--error-bg); transition: all 0.3s;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--error); border-radius: 12px; background: var(--error-bg);">
                             <div>
                                 <h4 style="font-size: 15px; font-weight: 700; color: var(--error); margin-bottom: 4px;">${t.icon} Chủ đề ${t.id}: ${t.title} (Điểm: ${score})</h4>
                                 <p style="font-size: 13px; color: #9f1239;">Đang dưới ngưỡng mục tiêu. Hệ thống đã chuẩn bị bộ câu hỏi phụ trợ.</p>
@@ -666,7 +745,7 @@
                     `;
                 } else {
                      pathwayHtml += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--border-color); border-radius: 12px; background: white; opacity: 0.7;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--border-color); border-radius: 12px; opacity: 0.7;">
                             <div>
                                 <h4 style="font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">${t.icon} Chủ đề ${t.id}: ${t.title} (Điểm: ${score})</h4>
                                 <p style="font-size: 13px; color: var(--text-muted);">Đã đạt mức ổn định.</p>
@@ -772,7 +851,7 @@
         function startQuestionTimer() {
             if (!isExamMode) return;
             clearInterval(questionTimerInterval);
-            timeLeft = 60; // Nâng lên 60 giây theo yêu cầu
+            timeLeft = 60;
             document.getElementById('question-timer').textContent = timeLeft;
             
             questionTimerInterval = setInterval(() => {
@@ -816,7 +895,6 @@
                     <p style="font-size: 14px; color: var(--text-muted);">Chế độ: ${isExamMode ? 'Thi thử tổng hợp 6 chủ đề (60s)' : 'Ôn tập bình thường'}</p>
                 </div>`;
 
-            // Mix chủ đề nế là Thi thử
             let activeTopic;
             if (isExamMode) {
                 activeTopic = topics[Math.floor(Math.random() * topics.length)];
@@ -914,11 +992,11 @@
                 selectedBtn.classList.add('correct');
                 try { confetti({ particleCount: 40, spread: 60, colors: ['#3b82f6', '#8b5cf6'] }); } catch(e){}
                 studentState.xp += 10;
-                fbZone.innerHTML = `<h4 style="color: #047857; margin-bottom: 8px; font-size: 16px;"><i class="fa-solid fa-circle-check"></i> Chính xác! (+10 XP)</h4><p style="font-size: 14px; color: #334155;">${explanation}</p>`;
+                fbZone.innerHTML = `<h4 style="color: #047857; margin-bottom: 8px; font-size: 16px;"><i class="fa-solid fa-circle-check"></i> Chính xác! (+10 XP)</h4><p style="font-size: 14px; color: var(--text-main);">${explanation}</p>`;
             } else {
                 selectedBtn.classList.add('wrong');
                 buttons[correctIdx].classList.add('correct'); 
-                fbZone.innerHTML = `<h4 style="color: #be123c; margin-bottom: 8px; font-size: 16px;"><i class="fa-solid fa-lightbulb"></i> Phân tích đáp án</h4><p style="font-size: 14px; color: #334155;">${explanation}</p>`;
+                fbZone.innerHTML = `<h4 style="color: #be123c; margin-bottom: 8px; font-size: 16px;"><i class="fa-solid fa-lightbulb"></i> Phân tích đáp án</h4><p style="font-size: 14px; color: var(--text-main);">${explanation}</p>`;
             }
 
             syncToFirebase();
@@ -935,7 +1013,7 @@
             document.querySelectorAll('.tf-radio').forEach(r => r.disabled = true);
 
             let correctCount = 0;
-            let feedbackHtml = '<h4 style="margin-bottom: 16px; font-size: 16px; color: #1e293b;">Phân tích từng ý:</h4>';
+            let feedbackHtml = '<h4 style="margin-bottom: 16px; font-size: 16px; color: var(--text-main);">Phân tích từng ý:</h4>';
 
             currentQuizData.statements.forEach((st, idx) => {
                 const selectedEle = document.querySelector(`input[name="tf_${idx}"]:checked`);
@@ -947,7 +1025,7 @@
                     <div class="tf-feedback-item ${isCorrect ? 'correct' : 'wrong'}">
                         <div style="font-weight: 500; margin-bottom: 6px;"><strong style="color:var(--primary); margin-right: 4px;">${st.id.toUpperCase()}.</strong> ${st.text}</div>
                         <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Lựa chọn: <b>${userChoice !== null ? (userChoice ? "Đúng" : "Sai") : "Chưa chọn"}</b> ${isCorrect ? '✅' : '❌'} (Đ/A: <b>${st.isTrue ? "Đúng" : "Sai"}</b>)</div>
-                        <div style="font-size: 13px; font-style: italic; color: #475569;">💡 ${st.explanation}</div>
+                        <div style="font-size: 13px; font-style: italic; color: var(--text-muted);">💡 ${st.explanation}</div>
                     </div>`;
             });
 
@@ -1048,7 +1126,15 @@
         }
         
         document.getElementById('chat-user-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendChatMessage(); });
-        window.onload = () => document.getElementById('auth-modal').style.display = 'flex';
+        
+        window.onload = () => {
+            document.getElementById('auth-modal').style.display = 'flex';
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                const icon = document.getElementById('dark-mode-icon');
+                if (icon) icon.className = "fa-solid fa-sun";
+            }
+        };
     </script>
 </body>
 </html>
