@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Adaptive Learning - NCKH Tin Học </title>
+    <title>AI Adaptive Learning - NCKH Dashboard</title>
     
     <!-- THƯ VIỆN BÊN THỨ 3 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -96,16 +98,13 @@
         .card-box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .card-box-title { font-size: 16px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
 
-        /* SKILLS SUMMARY GRID */
-        .skills-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        /* SKILLS SUMMARY GRID (Cập nhật cho 6 chủ đề) */
+        .skills-grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 1024px) { .skills-grid-6 { grid-template-columns: repeat(2, 1fr); } }
         .skill-card-mini { background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; position: relative; border-left: 4px solid var(--primary); }
-        .skill-card-mini.nghe { border-left-color: #3b82f6; }
-        .skill-card-mini.noi { border-left-color: #8b5cf6; }
-        .skill-card-mini.doc { border-left-color: #10b981; }
-        .skill-card-mini.viet { border-left-color: #f59e0b; }
-        .skill-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+        .skill-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; font-weight: 700; gap: 8px; }
         .skill-score-display { font-size: 24px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: baseline; gap: 4px; }
-        .status-badge-mini { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 700; text-transform: uppercase; }
+        .status-badge-mini { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
         .status-badge-mini.below { background: var(--error-bg); color: var(--error); }
         .status-badge-mini.approaching { background: var(--warning-bg); color: var(--warning); }
         .status-badge-mini.target { background: var(--success-bg); color: var(--success); }
@@ -125,7 +124,7 @@
         .topic-card:hover { border-color: var(--primary); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.08); transform: translateY(-2px); }
         .topic-card.active-topic { border-color: var(--primary); background: var(--primary-light); }
         .topic-icon { width: 48px; height: 48px; background: var(--bg-body); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
-        .topic-info h4 { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        .topic-info h4 { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
         .topic-info p { font-size: 13px; color: var(--text-muted); font-weight: 500; }
 
         /* WORKSPACE & QUIZ */
@@ -193,11 +192,11 @@
     <!-- MODAL ĐĂNG NHẬP -->
     <div id="auth-modal">
         <div class="auth-box">
-            <div style="font-size: 48px; margin-bottom: 12px;">🏫</div>
-            <h2 style="margin-bottom: 8px; font-size: 24px; font-weight: 800; color: var(--text-main);">Hệ thống NCKH</h2>
-            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">AI Adaptive Learning (THPT Tân Trào)</p>
+            <div style="font-size: 48px; margin-bottom: 12px;">🧪</div>
+            <h2 style="margin-bottom: 8px; font-size: 24px; font-weight: 800; color: var(--text-main);">Dự án NCKH</h2>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">Hệ thống AI Adaptive Learning</p>
             <input type="text" id="username" class="auth-input" placeholder="Họ và tên học sinh...">
-            <input type="text" id="class-name" class="auth-input" placeholder="Lớp (Ví dụ: 10A1)...">
+            <input type="text" id="class-name" class="auth-input" placeholder="Khối lớp...">
             <button class="auth-btn" onclick="saveUser()">Đăng nhập hệ thống</button>
         </div>
     </div>
@@ -205,10 +204,10 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+            <div class="brand-icon"><i class="fa-solid fa-microscope"></i></div>
             <div>
-                <h3 style="font-size: 15px; font-weight: 800; color: var(--text-main);">THPT TÂN TRÀO</h3>
-                <p style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Dự án NCKH Khối 10</p>
+                <h3 style="font-size: 15px; font-weight: 800; color: var(--text-main);">HỆ THỐNG NCKH</h3>
+                <p style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Học tập thích ứng</p>
             </div>
         </div>
         
@@ -225,10 +224,10 @@
             
             <div class="nav-group-title">HỌC TẬP & ÔN TẬP</div>
             <a class="nav-item" id="nav-materials" onclick="switchView('progress'); document.getElementById('practice-section-anchor').scrollIntoView({behavior: 'smooth'})">
-                <i class="fa-solid fa-book-open"></i> Ôn tập bình thường
+                <i class="fa-solid fa-book-open"></i> Ôn tập chủ đề
             </a>
             <a class="nav-item" id="nav-practice" onclick="startExamSession()">
-                <i class="fa-solid fa-bolt"></i> Thi thử ngay (30 câu)
+                <i class="fa-solid fa-bolt"></i> Thi thử ngay (45 câu)
             </a>
             
             <div class="nav-group-title">KHÁM PHÁ</div>
@@ -268,42 +267,27 @@
                         👋 Chào mừng quay trở lại, <span id="greeting-name">Học sinh</span>!
                     </div>
                     <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5;">
-                        Dữ liệu được lưu trữ trên hệ thống. Hãy duy trì tiến độ ôn tập mỗi ngày để đạt kết quả cao nhất trong môn Tin học 10. <span style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="fetchLeaderboard(); switchView('leaderboard');">Xem bảng xếp hạng ngay!</span>
+                        Dữ liệu được lưu trữ trên hệ thống máy chủ. Hãy duy trì tiến độ ôn tập qua từng chủ đề để cải thiện điểm số tích lũy. <span style="color: var(--primary); font-weight: 700; cursor: pointer;" onclick="fetchLeaderboard(); switchView('leaderboard');">Xem bảng xếp hạng ngay!</span>
                     </p>
                 </div>
 
                 <div class="grid-2-cols">
-                    <div class="card-box">
+                    <div class="card-box" style="grid-column: span 1;">
                         <div class="card-box-header">
-                            <div class="card-box-title"><i class="fa-solid fa-user-graduate" style="color: var(--primary);"></i> Hồ sơ năng lực <span style="font-size: 12px; font-weight: 500; color: var(--text-muted);">(Aim: Tinh thông)</span></div>
+                            <div class="card-box-title"><i class="fa-solid fa-layer-group" style="color: var(--primary);"></i> Năng lực 6 chủ đề</div>
                             <button class="auth-btn" style="margin:0; padding:6px 12px; font-size:12px; width:auto;" onclick="switchView('profile'); renderProfileView();">Xem hồ sơ</button>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
-                            <div class="skill-card-mini nghe">
-                                <div class="skill-header"><span>Mạng & Internet</span> <span class="status-badge-mini target">Đạt</span></div>
-                                <div class="skill-score-display">8.5 <span style="font-size:12px; font-weight:500; color:var(--text-muted);">/10</span></div>
-                            </div>
-                            <div class="skill-card-mini noi">
-                                <div class="skill-header"><span>Đạo đức số</span> <span class="status-badge-mini approaching">Tiệm cận</span></div>
-                                <div class="skill-score-display">7.2 <span style="font-size:12px; font-weight:500; color:var(--text-muted);">/10</span></div>
-                            </div>
-                            <div class="skill-card-mini doc">
-                                <div class="skill-header"><span>Python Cơ bản</span> <span class="status-badge-mini target">Đạt</span></div>
-                                <div class="skill-score-display">9.0 <span style="font-size:12px; font-weight:500; color:var(--text-muted);">/10</span></div>
-                            </div>
-                            <div class="skill-card-mini viet">
-                                <div class="skill-header"><span>Thuật toán</span> <span class="status-badge-mini below">Dưới ngưỡng</span></div>
-                                <div class="skill-score-display">5.5 <span style="font-size:12px; font-weight:500; color:var(--text-muted);">/10</span></div>
-                            </div>
+                        <div id="progress-mini-skills" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
+                            <!-- Sẽ được fill bằng JS để đồng bộ dữ liệu -->
                         </div>
                     </div>
 
-                    <div class="card-box">
+                    <div class="card-box" style="grid-column: span 1;">
                         <div class="card-box-header">
-                            <div class="card-box-title"><i class="fa-solid fa-fire" style="color: var(--warning);"></i> Hoạt động học tập</div>
+                            <div class="card-box-title"><i class="fa-solid fa-fire" style="color: var(--warning);"></i> Tần suất hoạt động</div>
                             <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);" id="streak-counter-badge">🔥 1 ngày học</span>
                         </div>
-                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Mức độ tương tác và luyện tập qua các tháng gần đây:</p>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Mức độ tương tác của bạn với hệ thống:</p>
                         <div class="heatmap-container">
                             <div class="heatmap-grid" id="heatmap-cells"></div>
                             <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 8px;">
@@ -317,7 +301,7 @@
                 <div id="practice-section-anchor" style="margin-top: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <h3 style="font-size: 18px; font-weight: 700; color: var(--text-main);">Chế độ Ôn tập bình thường</h3>
-                        <p style="font-size: 13px; color: var(--text-muted);">Chọn chủ đề để học không giới hạn thời gian áp lực</p>
+                        <p style="font-size: 13px; color: var(--text-muted);">Chọn chủ đề chuyên biệt để tập trung học không giới hạn áp lực</p>
                     </div>
                     <div class="topic-grid" id="level-list"></div>
                 </div>
@@ -328,7 +312,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                     <div>
                         <h1 class="page-title" style="margin-bottom: 4px;">Hồ sơ năng lực <span style="font-size: 13px; padding: 4px 10px; background: var(--warning-bg); color: var(--warning); border-radius: 8px; font-weight: 700; vertical-align: middle;">Đang đánh giá</span></h1>
-                        <p style="font-size: 14px; color: var(--text-muted);">Điểm trung bình từng kỹ năng qua tất cả các lần làm bài của bạn, so với ngưỡng của bậc mục tiêu.</p>
+                        <p style="font-size: 14px; color: var(--text-muted);">Điểm trung bình hệ thống phân tích dựa trên Thuật toán IRT so với mục tiêu tinh thông.</p>
                     </div>
                     <div>
                         <button class="auth-btn" style="margin:0; padding:8px 16px; font-size:13px; background:white; color:var(--primary); border:1px solid var(--primary);" onclick="alert('Đã xuất báo cáo PDF thành công!')"><i class="fa-solid fa-file-pdf"></i> Tải PDF</button>
@@ -339,13 +323,13 @@
 
             <!-- VIEW: PATHWAY -->
             <div id="view-pathway" class="view-section">
-                <h1 class="page-title">Lộ trình học tập cá nhân hóa (IRT)</h1>
+                <h1 class="page-title">Lộ trình học tập & Phân tích điểm yếu (IRT)</h1>
                 <div id="pathway-content-analysis"></div>
             </div>
 
             <!-- VIEW: LEADERBOARD -->
             <div id="view-leaderboard" class="view-section">
-                <h1 class="page-title">Bảng xếp hạng khối 10 (THPT Tân Trào)</h1>
+                <h1 class="page-title">Bảng xếp hạng tổng</h1>
                 <div id="leaderboard-table-container">
                     <div style="text-align: center; padding: 40px;"><div class="spinner"></div><p>Đang tải bảng xếp hạng từ hệ thống...</p></div>
                 </div>
@@ -358,8 +342,8 @@
                         <i class="fa-solid fa-arrow-left"></i> Thoát
                     </button>
                     <div class="session-progress">
-                        <span id="session-counter-display">Câu hỏi: 1/30</span>
-                        <div class="timer-badge" id="timer-badge-container"><i class="fa-solid fa-clock"></i> <span id="question-timer">30</span>s</div>
+                        <span id="session-counter-display">Câu hỏi: 1/45</span>
+                        <div class="timer-badge" id="timer-badge-container"><i class="fa-solid fa-clock"></i> <span id="question-timer">60</span>s</div>
                     </div>
                 </div>
                 <div id="quiz-workspace" style="width: 100%; max-width: 850px;"></div>
@@ -415,20 +399,24 @@
         let studentState = { xp: 0, theta: 0.0, streak: 1, selectedTopicIndex: 0 };
         
         let isExamMode = false;
-        const MAX_EXAM_QUESTIONS = 30;
+        const MAX_EXAM_QUESTIONS = 45;
         let currentSessionCount = 0;
         let currentSessionCorrect = 0;
         let questionTimerInterval = null;
-        let timeLeft = 30;
+        let timeLeft = 60;
 
+        // Dữ liệu 6 chủ đề chính
         const topics = [
-            { id: 1, title: "Máy tính và Xã hội tri thức", icon: "💻", count: 45 },
+            { id: 1, title: "Máy tính và Xã hội", icon: "💻", count: 45 },
             { id: 2, title: "Mạng máy tính & Internet", icon: "🌐", count: 32 },
             { id: 3, title: "Đạo đức, Pháp luật số", icon: "⚖️", count: 28 },
-            { id: 4, title: "Lập trình Python: Biến số", icon: "🐍", count: 50 },
-            { id: 5, title: "Cấu trúc Rẽ nhánh Python", icon: "🔀", count: 40 },
-            { id: 6, title: "Cấu trúc Vòng lặp Python", icon: "🔁", count: 40 }
+            { id: 4, title: "Python: Biến số & Dữ liệu", icon: "🐍", count: 50 },
+            { id: 5, title: "Python: Cấu trúc Rẽ nhánh", icon: "🔀", count: 40 },
+            { id: 6, title: "Python: Cấu trúc Vòng lặp", icon: "🔁", count: 40 }
         ];
+
+        // Giả lập điểm số của học sinh hiện tại (phục vụ NCKH / Lộ trình)
+        const mockTopicScores = [8.5, 9.0, 6.5, 5.0, 7.2, 4.5];
 
         function switchView(viewId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -461,7 +449,6 @@
             let currentStreak = parseInt(localStorage.getItem('streak_' + userId) || "1");
             studentState.streak = currentStreak;
 
-            // Xử lý đồng bộ với Firestore hoặc fallback sang LocalStorage nếu bị chặn mạng / file protocol
             try {
                 if (db) {
                     const docRef = db.collection("students").doc(userId);
@@ -477,7 +464,6 @@
                     throw new Error("No DB");
                 }
             } catch (error) {
-                console.warn("Sử dụng chế độ lưu cục bộ (LocalStorage do ngoại tuyến hoặc hạn chế file://)");
                 let localData = JSON.parse(localStorage.getItem('student_' + userId) || "null");
                 if (localData) {
                     studentState.xp = localData.xp || 0;
@@ -503,6 +489,26 @@
             document.getElementById('streak-counter-badge').textContent = `🔥 ${studentState.streak} ngày học`;
             renderHeatmapGrid();
             initTopics();
+            renderMiniProgress();
+        }
+
+        function renderMiniProgress() {
+            const container = document.getElementById('progress-mini-skills');
+            if(!container) return;
+            let html = '';
+            // Render 4 chủ đề đầu tiên cho gọn view progress
+            for(let i=0; i<4; i++) {
+                const s = mockTopicScores[i];
+                let status = s >= 8.5 ? "target" : (s >= 6.8 ? "approaching" : "below");
+                let statusText = s >= 8.5 ? "Đạt" : (s >= 6.8 ? "Tiệm cận" : "Yếu");
+                let borderColor = s >= 8.5 ? "#10b981" : (s >= 6.8 ? "#f59e0b" : "#ef4444");
+                html += `
+                <div class="skill-card-mini" style="border-left-color: ${borderColor};">
+                    <div class="skill-header"><span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 60%;">${topics[i].title}</span> <span class="status-badge-mini ${status}">${statusText}</span></div>
+                    <div class="skill-score-display" style="color: ${borderColor}">${s} <span style="font-size:12px; font-weight:500; color:var(--text-muted);">/10</span></div>
+                </div>`;
+            }
+            container.innerHTML = html;
         }
 
         function renderHeatmapGrid() {
@@ -524,7 +530,7 @@
             topics.forEach((t, index) => {
                 const el = document.createElement('div');
                 el.className = `topic-card ${studentState.selectedTopicIndex === index ? 'active-topic' : ''}`;
-                el.innerHTML = `<div class="topic-icon">${t.icon}</div><div class="topic-info"><h4>Chương ${t.id}: ${t.title}</h4><p>${t.count} câu hỏi ôn tập</p></div>`;
+                el.innerHTML = `<div class="topic-icon">${t.icon}</div><div class="topic-info"><h4>Chủ đề ${t.id}: ${t.title}</h4><p>${t.count} câu hỏi trong kho</p></div>`;
                 el.onclick = () => {
                     studentState.selectedTopicIndex = index;
                     document.querySelectorAll('.topic-card').forEach(c => c.classList.remove('active-topic'));
@@ -539,90 +545,145 @@
             const container = document.getElementById('profile-detailed-content');
             if (!currentUser) return;
 
-            container.innerHTML = `
-                <div class="skills-grid-4">
-                    <div class="skill-card-mini nghe" style="background:white; border:1px solid var(--border-color); border-radius:16px; padding:20px; border-left:4px solid #3b82f6;">
-                        <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:8px;"><span>Mạng & Internet</span><span class="status-badge-mini target">Đạt ngưỡng</span></div>
-                        <div style="font-size:28px; font-weight:800; color:#3b82f6; margin-bottom:8px;">8.5 -</div>
-                        <div style="font-size:12px; color:var(--text-muted);">Đã ôn 9 lần | Aim: Tinh thông</div>
+            let gridHtml = '<div class="skills-grid-6">';
+            topics.forEach((t, index) => {
+                const s = mockTopicScores[index];
+                let status = s >= 8.5 ? "target" : (s >= 6.8 ? "approaching" : "below");
+                let statusText = s >= 8.5 ? "Đạt ngưỡng" : (s >= 6.8 ? "Tiệm cận" : "Yếu");
+                let borderColor = s >= 8.5 ? "#10b981" : (s >= 6.8 ? "#f59e0b" : "#ef4444");
+                
+                gridHtml += `
+                    <div class="skill-card-mini" style="background:white; border:1px solid var(--border-color); border-radius:16px; padding:20px; border-left:4px solid ${borderColor};">
+                        <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:8px;">
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;" title="${t.title}">${t.title}</span>
+                            <span class="status-badge-mini ${status}">${statusText}</span>
+                        </div>
+                        <div style="font-size:28px; font-weight:800; color:${borderColor}; margin-bottom:8px;">${s}</div>
+                        <div style="font-size:12px; color:var(--text-muted);">Kho: ${t.count} câu hỏi</div>
                     </div>
-                    <div class="skill-card-mini noi" style="background:white; border:1px solid var(--border-color); border-radius:16px; padding:20px; border-left:4px solid #8b5cf6;">
-                        <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:8px;"><span>Đạo đức số</span><span class="status-badge-mini approaching">Tiệm cận</span></div>
-                        <div style="font-size:28px; font-weight:800; color:#8b5cf6; margin-bottom:8px;">7.0 -</div>
-                        <div style="font-size:12px; color:var(--text-muted);">Đã ôn 4 lần | Aim: Tinh thông</div>
-                    </div>
-                    <div class="skill-card-mini doc" style="background:white; border:1px solid var(--border-color); border-radius:16px; padding:20px; border-left:4px solid #10b981;">
-                        <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:8px;"><span>Python Cơ bản</span><span class="status-badge-mini target">Đạt ngưỡng</span></div>
-                        <div style="font-size:28px; font-weight:800; color:#10b981; margin-bottom:8px;">9.2 -</div>
-                        <div style="font-size:12px; color:var(--text-muted);">Đã ôn 14 lần | Aim: Tinh thông</div>
-                    </div>
-                    <div class="skill-card-mini viet" style="background:white; border:1px solid var(--border-color); border-radius:16px; padding:20px; border-left:4px solid #f59e0b;">
-                        <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:8px;"><span>Thuật toán</span><span class="status-badge-mini below">Dưới ngưỡng</span></div>
-                        <div style="font-size:28px; font-weight:800; color:#f59e0b; margin-bottom:8px;">5.5 <i class="fa-solid fa-arrow-down" style="font-size:14px;"></i></div>
-                        <div style="font-size:12px; color:var(--text-muted);">Đã ôn 6 lần | Aim: Tinh thông</div>
-                    </div>
-                </div>
+                `;
+            });
+            gridHtml += '</div>';
 
+            let tableHeaders = topics.map(t => `<th style="text-align: center;">Chủ đề ${t.id}</th>`).join('');
+            let tableData = mockTopicScores.map(s => `<td style="text-align: center;">${s}</td>`).join('');
+
+            container.innerHTML = `
+                ${gridHtml}
                 <div class="grid-2-cols" style="margin-bottom: 24px;">
                     <div class="card-box">
                         <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Chú thích (Aim: Tinh thông)</h3>
                         <div style="display:flex; flex-direction:column; gap:8px; font-size:13px;">
-                            <div><span class="status-badge-mini target" style="margin-right:8px;">Đạt ngưỡng</span> $\ge 8.5$ điểm</div>
-                            <div><span class="status-badge-mini approaching" style="margin-right:8px;">Tiệm cận</span> $\ge 6.8$ điểm (80% ngưỡng điểm)</div>
-                            <div><span class="status-badge-mini below" style="margin-right:8px;">Dưới ngưỡng</span> $< 6.8$ điểm</div>
+                            <div><span class="status-badge-mini target" style="margin-right:8px; display:inline-block; width: 80px; text-align: center;">Đạt ngưỡng</span> ≥ 8.5 điểm</div>
+                            <div><span class="status-badge-mini approaching" style="margin-right:8px; display:inline-block; width: 80px; text-align: center;">Tiệm cận</span> ≥ 6.8 điểm (80%)</div>
+                            <div><span class="status-badge-mini below" style="margin-right:8px; display:inline-block; width: 80px; text-align: center;">Dưới ngưỡng</span> &lt; 6.8 điểm</div>
                         </div>
                     </div>
-                    <div class="card-box" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <h3 style="font-size:16px; font-weight:700; margin-bottom:8px; align-self: flex-start;">Biểu đồ 4 kỹ năng / Chuyên đề</h3>
-                        <div style="width: 140px; height: 140px; border: 2px dashed var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 800; background: var(--primary-light);">
-                            Radar Chart
+                    <div class="card-box" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <h3 style="font-size:16px; font-weight:700; margin-bottom:8px; align-self: flex-start;">Biểu đồ 6 chủ đề năng lực</h3>
+                        <div style="width: 100%; max-width: 280px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;">
+                            <canvas id="skillsRadarChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Lịch sử hoạt động luyện tập & thi thử</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Ngày làm $\downarrow$</th>
-                            <th>Nội dung / Đề thi</th>
-                            <th>Chế độ</th>
-                            <th>Mạng & Internet</th>
-                            <th>Đạo đức số</th>
-                            <th>Python</th>
-                            <th>Thuật toán</th>
-                            <th>Tổng</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>27/07/2026<br><span style="font-size:11px; color:var(--text-muted);">13:30</span></td>
-                            <td><strong>Thi thử chuẩn 30 câu</strong></td>
-                            <td><span style="background:var(--error-bg); color:var(--error); padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700;">Thi thử</span></td>
-                            <td>8.5</td>
-                            <td>7.0</td>
-                            <td>9.0</td>
-                            <td>6.0</td>
-                            <td><strong>7.6</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Lịch sử hoạt động thi thử</h3>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày làm $\\downarrow$</th>
+                                ${tableHeaders}
+                                <th style="text-align: center;">Trung bình</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>27/07/2026<br><span style="font-size:11px; color:var(--text-muted);">13:30</span></td>
+                                ${tableData}
+                                <td style="text-align: center;"><strong>6.8</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             `;
+
+            setTimeout(() => {
+                const ctx = document.getElementById('skillsRadarChart');
+                if (ctx) {
+                    new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                            labels: topics.map(t => 'CĐ ' + t.id), // Viết tắt để tránh tràn viền chart
+                            datasets: [{
+                                label: 'Điểm số',
+                                data: mockTopicScores,
+                                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                                pointBorderColor: '#fff',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                r: {
+                                    angleLines: { color: 'rgba(0,0,0,0.1)' },
+                                    grid: { color: 'rgba(0,0,0,0.1)' },
+                                    pointLabels: { font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" }, color: '#64748b' },
+                                    ticks: { stepSize: 2, min: 0, max: 10, display: false }
+                                }
+                            },
+                            plugins: { legend: { display: false } },
+                            maintainAspectRatio: false
+                        }
+                    });
+                }
+            }, 50);
         }
 
         async function renderPathwayAnalysis() {
             const container = document.getElementById('pathway-content-analysis');
-            container.innerHTML = `
+            
+            let pathwayHtml = `
                 <div style="background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 24px;">
-                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--text-main);"><i class="fa-solid fa-route" style="color: var(--primary);"></i> Biểu đồ định hướng Lộ trình IRT (Item Response Theory)</h3>
-                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Hệ thống tự động phân tích độ khó câu hỏi thích ứng theo năng lực thực tế của học sinh trường THPT Tân Trào.</p>
-                </div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--text-main);"><i class="fa-solid fa-route" style="color: var(--primary);"></i> Phân tích Điểm yếu & Gợi ý ôn tập</h3>
+                    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">Hệ thống phát hiện các chủ đề bạn đang dưới ngưỡng an toàn (Màu đỏ). Click vào nút để chuyển đến không gian luyện tập cải thiện tương ứng.</p>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
             `;
+            
+            topics.forEach((t, index) => {
+                const score = mockTopicScores[index];
+                if(score < 6.8) { // Yếu hoặc Tiệm cận dưới
+                    pathwayHtml += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--error); border-radius: 12px; background: var(--error-bg); transition: all 0.3s;">
+                            <div>
+                                <h4 style="font-size: 15px; font-weight: 700; color: var(--error); margin-bottom: 4px;">${t.icon} Chủ đề ${t.id}: ${t.title} (Điểm: ${score})</h4>
+                                <p style="font-size: 13px; color: #9f1239;">Đang dưới ngưỡng mục tiêu. Hệ thống đã chuẩn bị bộ câu hỏi phụ trợ.</p>
+                            </div>
+                            <button class="auth-btn" style="margin: 0; padding: 8px 16px; font-size: 13px; width: auto; background: var(--error);" onclick="studentState.selectedTopicIndex = ${index}; startNormalPracticeSession();">Ôn tập ngay</button>
+                        </div>
+                    `;
+                } else {
+                     pathwayHtml += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--border-color); border-radius: 12px; background: white; opacity: 0.7;">
+                            <div>
+                                <h4 style="font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">${t.icon} Chủ đề ${t.id}: ${t.title} (Điểm: ${score})</h4>
+                                <p style="font-size: 13px; color: var(--text-muted);">Đã đạt mức ổn định.</p>
+                            </div>
+                            <span class="status-badge-mini target" style="background: var(--success-bg); color: var(--success);">Đạt ngưỡng</span>
+                        </div>
+                    `;
+                }
+            });
+            
+            pathwayHtml += `</div></div>`;
+            container.innerHTML = pathwayHtml;
         }
 
         async function fetchLeaderboard() {
             const container = document.getElementById('leaderboard-table-container');
-            container.innerHTML = `<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p>Đang tải bảng xếp hạng khối 10...</p></div>`;
+            container.innerHTML = `<div style="text-align: center; padding: 40px;"><div class="spinner"></div><p>Đang tải bảng xếp hạng từ máy chủ...</p></div>`;
 
             try {
                 if (!db) throw new Error("No DB");
@@ -632,23 +693,22 @@
                 snapshot.forEach(doc => {
                     let d = doc.data();
                     let medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : `#${rank}`;
-                    rowsHtml += `<tr><td style="font-weight: 800; font-size: 16px;">${medal}</td><td><strong>${d.fullName || "Học sinh"}</strong></td><td>${d.className || "10A..."}</td><td><span style="color: var(--primary); font-weight: 800;">${d.xp || 0} XP</span></td></tr>`;
+                    rowsHtml += `<tr><td style="font-weight: 800; font-size: 16px;">${medal}</td><td><strong>${d.fullName || "Học sinh"}</strong></td><td>${d.className || "Ẩn"}</td><td><span style="color: var(--primary); font-weight: 800;">${d.xp || 0} XP</span></td></tr>`;
                     rank++;
                 });
                 if (rowsHtml === "") throw new Error("Empty");
-                container.innerHTML = `<table class="data-table"><thead><tr><th style="width: 80px;">Hạng</th><th>Họ và tên học sinh</th><th>Lớp</th><th>Điểm tích lũy (XP)</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
+                container.innerHTML = `<table class="data-table"><thead><tr><th style="width: 80px;">Hạng</th><th>Tài khoản người dùng</th><th>Khối/Lớp</th><th>Điểm tích lũy (XP)</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
             } catch (err) {
-                // Fallback hiển thị học sinh hiện tại nếu offline
                 let currentXP = studentState.xp || 0;
                 let fullName = currentUser ? currentUser.user : "Học sinh";
-                let className = currentUser ? currentUser.className : "10A3";
+                let className = currentUser ? currentUser.className : "Khối 10";
                 container.innerHTML = `
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th style="width: 80px;">Hạng</th>
-                                <th>Họ và tên học sinh</th>
-                                <th>Lớp</th>
+                                <th>Tài khoản người dùng</th>
+                                <th>Khối/Lớp</th>
                                 <th>Điểm tích lũy (XP)</th>
                             </tr>
                         </thead>
@@ -712,7 +772,7 @@
         function startQuestionTimer() {
             if (!isExamMode) return;
             clearInterval(questionTimerInterval);
-            timeLeft = 30;
+            timeLeft = 60; // Nâng lên 60 giây theo yêu cầu
             document.getElementById('question-timer').textContent = timeLeft;
             
             questionTimerInterval = setInterval(() => {
@@ -729,7 +789,7 @@
             const fbZone = document.getElementById('quiz-feedback-zone');
             if (fbZone && fbZone.style.display !== 'block') {
                 fbZone.style.display = 'block';
-                fbZone.innerHTML = `<h4 style="color: var(--error); margin-bottom: 8px;"><i class="fa-solid fa-clock"></i> Hết giờ!</h4><p>Đã quá thời gian 30 giây cho câu hỏi này.</p>`;
+                fbZone.innerHTML = `<h4 style="color: var(--error); margin-bottom: 8px;"><i class="fa-solid fa-clock"></i> Hết giờ!</h4><p>Đã quá thời gian 60 giây cho câu hỏi này.</p>`;
                 const limitMax = isExamMode ? MAX_EXAM_QUESTIONS : 10;
                 const btnText = currentSessionCount >= limitMax ? "Hoàn thành phiên" : "Câu tiếp theo";
                 fbZone.innerHTML += `<div style="overflow: hidden; margin-top: 20px;"><button onclick="loadNextQuestion()" class="btn-next">${btnText} <i class="fa-solid fa-arrow-right"></i></button></div>`;
@@ -753,18 +813,26 @@
                 <div class="quiz-container-box" style="text-align: center; padding: 60px 20px;">
                     <div class="spinner"></div>
                     <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text-main);">AI đang thiết lập câu hỏi...</h3>
-                    <p style="font-size: 14px; color: var(--text-muted);">Chế độ: ${isExamMode ? 'Thi thử áp lực thời gian' : 'Ôn tập bình thường'}</p>
+                    <p style="font-size: 14px; color: var(--text-muted);">Chế độ: ${isExamMode ? 'Thi thử tổng hợp 6 chủ đề (60s)' : 'Ôn tập bình thường'}</p>
                 </div>`;
 
-            const topicName = topics[studentState.selectedTopicIndex].title;
+            // Mix chủ đề nế là Thi thử
+            let activeTopic;
+            if (isExamMode) {
+                activeTopic = topics[Math.floor(Math.random() * topics.length)];
+            } else {
+                activeTopic = topics[studentState.selectedTopicIndex];
+            }
+            
+            const topicName = activeTopic.title;
             const diffDesc = getIRTDifficultyDescription(studentState.theta);
             const isTrueFalseFormat = Math.random() > 0.5;
             let promptQuiz = "";
 
             if (isTrueFalseFormat) {
-                promptQuiz = `Tạo 1 câu hỏi trắc nghiệm ĐÚNG/SAI môn Tin học 10 chủ đề: "${topicName}". Độ khó: ${diffDesc}. Gồm 1 tình huống và 4 ý (a, b, c, d). Trả về JSON: {"type": "true_false", "question": "...", "statements": [{"id": "a", "text": "...", "isTrue": true, "explanation": "..."}, {"id": "b", "text": "...", "isTrue": false, "explanation": "..."}, {"id": "c", "text": "...", "isTrue": true, "explanation": "..."}, {"id": "d", "text": "...", "isTrue": false, "explanation": "..."}]}`;
+                promptQuiz = `Tạo 1 câu hỏi trắc nghiệm ĐÚNG/SAI môn Tin học chủ đề: "${topicName}". Độ khó: ${diffDesc}. Gồm 1 tình huống và 4 ý (a, b, c, d). Trả về JSON: {"type": "true_false", "question": "...", "statements": [{"id": "a", "text": "...", "isTrue": true, "explanation": "..."}, {"id": "b", "text": "...", "isTrue": false, "explanation": "..."}, {"id": "c", "text": "...", "isTrue": true, "explanation": "..."}, {"id": "d", "text": "...", "isTrue": false, "explanation": "..."}]}`;
             } else {
-                promptQuiz = `Tạo ĐÚNG 1 câu trắc nghiệm 4 đáp án Tin học 10 chủ đề: "${topicName}". Độ khó: ${diffDesc}. Trả về JSON: {"type": "multiple_choice", "question": "...", "options": ["A", "B", "C", "D"], "correctIndex": 0, "explanation": "..."}`;
+                promptQuiz = `Tạo ĐÚNG 1 câu trắc nghiệm 4 đáp án môn Tin học chủ đề: "${topicName}". Độ khó: ${diffDesc}. Trả về JSON: {"type": "multiple_choice", "question": "...", "options": ["A", "B", "C", "D"], "correctIndex": 0, "explanation": "..."}`;
             }
 
             try {
@@ -779,14 +847,14 @@
                 currentQuizData = JSON.parse(jsonStr);
                 currentQuizData = shuffleOptionsArray(currentQuizData);
                 currentQuizData.difficultyB = studentState.theta; 
-                renderQuizBox(currentQuizData);
+                renderQuizBox(currentQuizData, activeTopic);
                 startQuestionTimer();
             } catch (e) {
                 container.innerHTML = `<div class="quiz-container-box" style="text-align:center;"><p style="color:var(--error); font-weight:bold; margin-bottom: 16px;">Mất kết nối hệ thống AI</p><button onclick="currentSessionCount--; loadNextQuestion()" class="btn-submit-tf" style="width: auto;">Thử lại câu này</button></div>`;
             }
         }
 
-        function renderQuizBox(quizData) {
+        function renderQuizBox(quizData, activeTopic) {
             const container = document.getElementById('quiz-workspace');
             let qText = quizData.question.replace(/\n/g, '<br>');
             let interactiveZone = '';
@@ -812,11 +880,13 @@
                 interactiveZone = `<div id="quiz-options-zone">${optsHtml}</div>`;
             }
 
+            const headerInfo = isExamMode ? `🔥 THI THỬ 45 CÂU (Chủ đề hiện tại: ${activeTopic.title})` : `${activeTopic.icon} ${activeTopic.title} (Ôn tập bình thường)`;
+
             container.innerHTML = `
                 <div class="quiz-container-box">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">
                         <span style="font-weight:700; color:var(--text-muted); font-size: 13px; text-transform: uppercase;">
-                            ${topics[studentState.selectedTopicIndex].icon} ${topics[studentState.selectedTopicIndex].title} (${isExamMode ? 'Chế độ Thi thử' : 'Ôn tập bình thường'})
+                            ${headerInfo}
                         </span>
                     </div>
                     <div style="font-size: 18px; font-weight: 700; margin-bottom: 24px; line-height: 1.6; color: var(--text-main);">${qText}</div>
@@ -925,11 +995,11 @@
                     <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 32px;">
                         <div>
                             <div style="font-size: 24px; font-weight: 800; color: var(--success);">${currentSessionCorrect}</div>
-                            <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Đúng</div>
+                            <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Đúng hoàn toàn</div>
                         </div>
                         <div>
                             <div style="font-size: 24px; font-weight: 800; color: var(--error);">${limitMax - currentSessionCorrect}</div>
-                            <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Sai</div>
+                            <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Có điểm sai</div>
                         </div>
                     </div>
                     <div class="summary-actions">
@@ -946,7 +1016,7 @@
             win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
         }
         
-        let chatHistory = [{role: "system", content: "Bạn là Trợ lý AI Sư phạm môn Tin học 10. Trả lời ngắn gọn, súc tích."}];
+        let chatHistory = [{role: "system", content: "Bạn là Trợ lý AI Sư phạm. Trả lời ngắn gọn, súc tích."}];
         
         async function sendChatMessage() {
             const input = document.getElementById('chat-user-input');
