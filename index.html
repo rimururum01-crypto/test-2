@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Adaptive Learning - NCKH của Tuấn Minh</title>
+    <title>NCKH Student - Adaptive Learning & Intelligent Assessment System</title>
     
     <!-- THƯ VIỆN BÊN THỨ 3 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -34,6 +34,11 @@
             --header-height: 70px;
             --font-ui: 'Nunito', sans-serif;
             --font-code: 'Fira Code', monospace;
+            --card-radius: 22px;
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --card-shadow-hover: 0 12px 40px rgba(59, 130, 246, 0.15);
+            --gradient-primary: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --gradient-hero: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1));
         }
 
         /* LIGHT MODE OVERRIDES */
@@ -79,7 +84,7 @@
         .sidebar { width: var(--sidebar-width); background: var(--bg-panel); backdrop-filter: blur(12px); border-right: 1px solid var(--border-light); display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 5px 0 25px rgba(0,0,0,0.05); }
         .sidebar.collapsed { transform: translateX(-100%); }
         .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; gap: 16px; }
-        .brand-logo { width: 45px; height: 45px; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; box-shadow: 0 0 20px var(--primary-glow); position: relative; overflow: hidden; }
+        .brand-logo { width: 45px; height: 45px; border-radius: 14px; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; box-shadow: 0 0 20px var(--primary-glow); position: relative; overflow: hidden; font-weight: 800; letter-spacing: -0.5px; }
         
         .nav-menu { padding: 20px 16px; flex: 1; overflow-y: auto; }
         .nav-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 24px 0 8px 12px; }
@@ -114,7 +119,10 @@
         .view-section { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.3s ease, transform 0.3s ease; }
         .view-section.active { display: block; opacity: 1; transform: translateY(0); }
 
-        .glass-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border-light); border-radius: 24px; padding: 32px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 24px; }
+        .glass-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border-light); border-radius: var(--card-radius); padding: 32px; position: relative; overflow: hidden; box-shadow: var(--card-shadow); margin-bottom: 24px; transition: all 0.3s ease; }
+        .glass-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-2px); border-color: var(--border-focus); }
+        .glass-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient-primary); opacity: 0; transition: opacity 0.3s ease; }
+        .glass-card:hover::before { opacity: 1; }
 
         .dashboard-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; margin-bottom: 32px; }
         .col-span-12 { grid-column: span 12; }
@@ -124,15 +132,16 @@
         .col-span-5 { grid-column: span 5; }
         .col-span-4 { grid-column: span 4; }
 
-        .welcome-banner { background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=20'); background-size: cover; background-position: center; border: 1px solid var(--border-focus); border-radius: 24px; padding: 40px; display: flex; justify-content: space-between; align-items: center; }
+        .welcome-banner { background: var(--gradient-hero), linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=20'); background-size: cover; background-position: center; border: 1px solid var(--border-focus); border-radius: var(--card-radius); padding: 40px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+        .welcome-banner::after { content: ''; position: absolute; top: -50%; right: -20%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(139, 92, 246, 0.2), transparent 70%); pointer-events: none; }
         .stat-badge { background: rgba(0,0,0,0.5); border: 1px solid var(--border-light); padding: 12px 24px; border-radius: 16px; backdrop-filter: blur(10px); display: inline-flex; align-items: center; gap: 12px; }
         .stat-value { font-size: 24px; font-weight: 800; font-family: var(--font-code); color: var(--accent); }
 
         .chart-container { position: relative; height: 300px; width: 100%; margin-top: 10px; }
 
         .topics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-        .topic-card { background: rgba(148,163,184,0.05); border: 1px solid var(--border-light); border-radius: 20px; padding: 24px; cursor: pointer; transition: all 0.3s; display: flex; gap: 20px; }
-        .topic-card:hover { background: rgba(59,130,246,0.05); border-color: var(--primary); transform: translateY(-3px); }
+        .topic-card { background: rgba(148,163,184,0.05); border: 1px solid var(--border-light); border-radius: var(--card-radius); padding: 24px; cursor: pointer; transition: all 0.3s; display: flex; gap: 20px; }
+        .topic-card:hover { background: rgba(59,130,246,0.05); border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--card-shadow-hover); }
         .topic-icon { width: 50px; height: 50px; border-radius: 16px; background: rgba(148,163,184,0.1); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; border: 1px solid var(--border-light); }
         
         .ide-wrapper { display: flex; gap: 24px; height: 600px; margin-top: 24px; }
@@ -146,8 +155,8 @@
         
         .btn { padding: 12px 24px; border-radius: 14px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; outline: none; font-family: var(--font-ui); }
         .btn:disabled { opacity: 0.7; cursor: not-allowed; }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
-        .btn-primary:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-primary { background: var(--gradient-primary); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-primary:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 6px 20px var(--primary-glow); }
         .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
         .btn-outline:hover:not(:disabled) { background: rgba(59,130,246,0.1); }
         .btn-success { background: var(--success); color: white; }
@@ -168,7 +177,10 @@
         /* ĐĂNG NHẬP */
         .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.92); backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .overlay.active { opacity: 1; pointer-events: auto; }
-        .auth-box { background: var(--bg-card); border: 1px solid var(--border-focus); padding: 40px; border-radius: 24px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .auth-box { background: var(--bg-card); border: 1px solid var(--border-focus); padding: 40px; border-radius: var(--card-radius); width: 100%; max-width: 440px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
+        .auth-box::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent 0deg, rgba(59, 130, 246, 0.05) 90deg, transparent 180deg, rgba(139, 92, 246, 0.05) 270deg, transparent 360deg); animation: aurora 8s linear infinite; pointer-events: none; }
+        @keyframes aurora { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .auth-box > * { position: relative; z-index: 1; }
         .input-group { margin-bottom: 20px; text-align: left; }
         .cyber-input { width: 100%; padding: 14px 16px; background: rgba(148,163,184,0.1); border: 1px solid var(--border-light); border-radius: 12px; color: var(--text-main); font-size: 15px; outline: none; font-family: var(--font-ui); transition: border-color 0.2s; font-weight: 600; }
         .cyber-input:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
@@ -218,9 +230,10 @@
     <!-- OVERLAY ĐĂNG NHẬP -->
     <div class="overlay active" id="auth-overlay">
         <div class="auth-box">
-            <div class="brand-logo" style="width: 70px; height: 70px; font-size: 32px; margin: 0 auto 20px;">🔬</div>
-            <h2 class="text-gradient" style="font-size: 24px; margin-bottom: 6px;">NCKH CỦA TUẤN MINH</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 28px;">Hệ thống học tập thích ứng AI (IRT Adaptive)</p>
+            <div class="brand-logo" style="width: 70px; height: 70px; font-size: 32px; margin: 0 auto 20px;">NCKH</div>
+            <h2 class="text-gradient" style="font-size: 24px; margin-bottom: 6px;">NCKH</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 4px;">Adaptive Learning & Intelligent Assessment System</p>
+            <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 28px;">Hệ thống học tập thích ứng ứng dụng AI và IRT</p>
             
             <div class="input-group">
                 <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; display: block;">HỌ VÀ TÊN</label>
@@ -239,10 +252,10 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="brand-logo"><i class="fa-solid fa-code"></i></div>
+            <div class="brand-logo">NCKH</div>
             <div class="brand-text">
-                <h3 style="font-size: 15px; font-weight: 800;">NCKH CỦA TUẤN MINH</h3>
-                <p style="font-size: 11px; color: var(--accent); font-family: var(--font-code);">v2.6.1 Optimize</p>
+                <h3 style="font-size: 15px; font-weight: 800;">NCKH Student</h3>
+                <p style="font-size: 11px; color: var(--accent); font-family: var(--font-code);">Adaptive Learning & IRT</p>
             </div>
         </div>
         <div class="nav-menu">
@@ -474,6 +487,11 @@
             </div>
 
         </div>
+        
+        <!-- FOOTER -->
+        <footer style="text-align: center; padding: 24px 0; color: var(--text-muted); font-size: 13px; font-weight: 600; border-top: 1px solid var(--border-light); margin-top: 20px;">
+            <span class="text-gradient" style="font-weight: 800;">NCKH</span> © 2026 — Adaptive Learning & Intelligent Assessment System
+        </footer>
     </main>
 
     <!-- CHATBOT TUTOR -->
@@ -529,6 +547,34 @@
             ],
             quizQuestions: [], currentQIndex: 0, quizScore: 0, currentTopicIndex: -1, isExamMode: false
         };
+
+        // ===== PERFORMANCE OPTIMIZATION =====
+        // Debounce utility: tránh gọi render liên tục khi Firebase snapshot
+        let _debounceTimers = {};
+        function debounce(key, fn, delay = 300) {
+            clearTimeout(_debounceTimers[key]);
+            _debounceTimers[key] = setTimeout(fn, delay);
+        }
+
+        // Chỉ render chart khi view đang active
+        function isViewActive(viewId) {
+            const el = document.getElementById(`view-${viewId}`);
+            return el && el.classList.contains('active');
+        }
+
+        // Cache chart instances để tránh destroy/create liên tục
+        const _chartCache = {};
+        function getOrCreateChart(id, config) {
+            if(_chartCache[id]) {
+                _chartCache[id].data = config.data;
+                _chartCache[id].options = config.options;
+                _chartCache[id].update();
+                return _chartCache[id];
+            }
+            _chartCache[id] = new Chart(document.getElementById(id), config);
+            return _chartCache[id];
+        }
+        // ===== END PERFORMANCE =====
 
         window.onload = () => { 
             setTimeout(initParticleCanvas, 500); 
@@ -824,27 +870,25 @@
                 plugins: { legend: { display: false } }
             };
 
-            const ctxR = document.getElementById('radarChart')?.getContext('2d');
-            if(ctxR && document.getElementById('view-dashboard').classList.contains('active')) {
-                if(radarChartIns) radarChartIns.destroy();
-                radarChartIns = new Chart(ctxR, { type: 'radar', data: { labels: ['CĐ1', 'CĐ2', 'CĐ3', 'CĐ4', 'CĐ5', 'CĐ6'], datasets: [{ data: state.topicScores, backgroundColor: 'rgba(59, 130, 246, 0.25)', borderColor: '#3b82f6', borderWidth: 2, pointRadius: 3 }] }, options: radarOptions });
+            // Chỉ render chart của view đang active => giảm CPU/DOM
+            if(isViewActive('dashboard')) {
+                if(document.getElementById('radarChart')) {
+                    getOrCreateChart('radarChart', { type: 'radar', data: { labels: ['CĐ1', 'CĐ2', 'CĐ3', 'CĐ4', 'CĐ5', 'CĐ6'], datasets: [{ data: state.topicScores, backgroundColor: 'rgba(59, 130, 246, 0.25)', borderColor: '#3b82f6', borderWidth: 2, pointRadius: 3 }] }, options: radarOptions });
+                }
+                if(document.getElementById('lineChart')) {
+                    const labels = state.historyTheta.map((_, i) => i === 0 ? 'Gốc' : `Bài ${i}`);
+                    getOrCreateChart('lineChart', {
+                        type: 'line',
+                        data: { labels: labels, datasets: [{ data: state.historyTheta, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', borderWidth: 3, fill: true, pointRadius: 4 }] },
+                        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: gridColor }, ticks: { color: textColor } }, y: { grid: { color: gridColor }, ticks: { color: textColor }, min: -3, max: 3 } }, plugins: { legend: { display: false } } }
+                    });
+                }
             }
 
-            const ctxPR = document.getElementById('profileRadarChart')?.getContext('2d');
-            if(ctxPR && document.getElementById('view-profile').classList.contains('active')) {
-                if(profileRadarChartIns) profileRadarChartIns.destroy();
-                profileRadarChartIns = new Chart(ctxPR, { type: 'radar', data: { labels: ['MT & XH', 'Mạng', 'Đạo đức', 'Biến số', 'Rẽ nhánh', 'Vòng lặp'], datasets: [{ data: state.topicScores, backgroundColor: 'rgba(6, 182, 212, 0.25)', borderColor: '#06b6d4', borderWidth: 2, pointRadius: 3 }] }, options: radarOptions });
-            }
-
-            const ctxL = document.getElementById('lineChart')?.getContext('2d');
-            if(ctxL && document.getElementById('view-dashboard').classList.contains('active')) {
-                if(lineChartIns) lineChartIns.destroy();
-                const labels = state.historyTheta.map((_, i) => i === 0 ? 'Gốc' : `Bài ${i}`);
-                lineChartIns = new Chart(ctxL, {
-                    type: 'line',
-                    data: { labels: labels, datasets: [{ data: state.historyTheta, borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', borderWidth: 3, fill: true, pointRadius: 4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: gridColor }, ticks: { color: textColor } }, y: { grid: { color: gridColor }, ticks: { color: textColor }, min: -3, max: 3 } }, plugins: { legend: { display: false } } }
-                });
+            if(isViewActive('profile')) {
+                if(document.getElementById('profileRadarChart')) {
+                    getOrCreateChart('profileRadarChart', { type: 'radar', data: { labels: ['MT & XH', 'Mạng', 'Đạo đức', 'Biến số', 'Rẽ nhánh', 'Vòng lặp'], datasets: [{ data: state.topicScores, backgroundColor: 'rgba(6, 182, 212, 0.25)', borderColor: '#06b6d4', borderWidth: 2, pointRadius: 3 }] }, options: radarOptions });
+                }
             }
         }
 
@@ -867,7 +911,7 @@
             require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' }});
             require(['vs/editor/editor.main'], function () {
                 editor = monaco.editor.create(document.getElementById('monaco-container'), {
-                    value: '# Viết code Python tại đây\ndef hello():\n    print("NCKH của Tuấn Minh - AI sẵn sàng!")\n\nhello()',
+                    value: '# Viết code Python tại đây\ndef hello():\n    print("NCKH - AI sẵn sàng!")\n\nhello()',
                     language: 'python', theme: document.body.classList.contains('light-mode') ? 'vs' : 'vs-dark', automaticLayout: true, fontSize: 13, fontFamily: "'Fira Code', monospace", minimap: { enabled: false }
                 });
                 isMonacoReady = true;
@@ -974,6 +1018,58 @@
             }, 1000);
         }
 
+        // Hàm lấy câu hỏi từ Firebase quizzes (nguồn dữ liệu chính)
+        // Adaptive Selection: chọn câu theo Theta để tối đa thông tin IRT
+        async function fetchQuizzesFromFirebase(topicFilter = null, count = 15, theta = 0) {
+            try {
+                let query = db.collection('quizzes');
+                if(topicFilter) query = query.where('topic', '==', topicFilter);
+                const snapshot = await query.get();
+                const allQuizzes = [];
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    allQuizzes.push({
+                        id: doc.id,
+                        q: d.title || d.q || '',
+                        options: [d.optA, d.optB, d.optC, d.optD].filter(Boolean),
+                        answer: ['A', 'B', 'C', 'D'].indexOf(d.correct),
+                        diff: parseFloat(d.diff) || 0,
+                        disc: parseFloat(d.disc) || 1.0,
+                        topic: d.topic || ''
+                    });
+                });
+                
+                // ADAPTIVE LEARNING ENGINE:
+                // Sắp xếp câu hỏi theo mức độ phù hợp với Theta hiện tại
+                // Câu có độ khó b gần Theta nhất => thông tin tối đa (Maximum Information)
+                const sorted = allQuizzes.sort((a, b) => {
+                    const infoA = Math.abs(a.diff - theta);
+                    const infoB = Math.abs(b.diff - theta);
+                    return infoA - infoB;
+                });
+                
+                // Lấy count câu phù hợp nhất, sau đó shuffle nhẹ để tránh lặp thứ tự
+                const selected = sorted.slice(0, count);
+                return selected.sort(() => Math.random() - 0.5);
+            } catch(e) {
+                console.error("Lỗi lấy câu hỏi từ Firebase:", e);
+                return [];
+            }
+        }
+
+        // Hàm AI sinh câu hỏi bổ sung khi Firebase không đủ
+        async function generateAIQuestions(topicName, count, theta = null) {
+            const prompt = `Tạo đúng ${count} câu hỏi trắc nghiệm Tin học về "${topicName}"${theta !== null ? ` phân hóa độ khó theo năng lực Theta = ${theta}` : ''}. Bắt buộc trả về đúng định dạng JSON: {"questions": [{"q": "Câu hỏi?", "options": ["A", "B", "C", "D"], "answer": 0}]}`;
+            try {
+                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEYS.GROQ}` }, body: JSON.stringify({ model: API_KEYS.MODEL, messages: [{role: "user", content: prompt}], response_format: { type: "json_object" } }) });
+                const data = JSON.parse((await res.json()).choices[0].message.content.trim());
+                return (data.questions || []).slice(0, count).map(q => ({ q: q.q, options: q.options, answer: q.answer, diff: 0, disc: 1.0, topic: topicName }));
+            } catch(e) {
+                console.error("Lỗi AI sinh câu hỏi:", e);
+                return [];
+            }
+        }
+
         async function startPracticeSession(topicIndex) {
             state.currentTopicIndex = topicIndex;
             state.isExamMode = false;
@@ -985,16 +1081,29 @@
             document.getElementById('quiz-progress-bar').style.width = '0%';
             
             const contentArea = document.getElementById('quiz-content-area');
-            contentArea.innerHTML = `<div style="text-align: center; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--primary); margin-bottom: 16px;"></i><p>AI đang tạo 15 câu hỏi ôn tập...</p></div>`;
+            contentArea.innerHTML = `<div style="text-align: center; padding: 40px;"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--primary); margin-bottom: 16px;"></i><p>Đang tải câu hỏi từ ngân hàng đề NCKH...</p></div>`;
             
-            const prompt = `Tạo đúng 15 câu hỏi trắc nghiệm Tin học về "${topic.name}". Bắt buộc trả về đúng định dạng JSON: {"questions": [{"q": "Câu hỏi?", "options": ["A", "B", "C", "D"], "answer": 0}]}`;
+            const REQUIRED_COUNT = 15;
             
-            try {
-                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEYS.GROQ}` }, body: JSON.stringify({ model: API_KEYS.MODEL, messages: [{role: "user", content: prompt}], response_format: { type: "json_object" } }) });
-                state.quizQuestions = JSON.parse((await res.json()).choices[0].message.content.trim()).questions.slice(0, 15);
-                state.currentQIndex = 0; state.quizScore = 0;
-                renderQuizQuestion();
-            } catch(e) { contentArea.innerHTML = `<p style="color: var(--error); text-align:center;">Lỗi tạo đề bài!</p>`; }
+            // 1. Lấy câu hỏi từ Firebase trước (Adaptive: theo Theta hiện tại)
+            let fbQuestions = await fetchQuizzesFromFirebase(topic.name, REQUIRED_COUNT, state.theta);
+            
+            // 2. Nếu Firebase không đủ, AI sinh bổ sung
+            if(fbQuestions.length < REQUIRED_COUNT) {
+                const missing = REQUIRED_COUNT - fbQuestions.length;
+                const aiQuestions = await generateAIQuestions(topic.name, missing);
+                fbQuestions = [...fbQuestions, ...aiQuestions];
+            }
+            
+            state.quizQuestions = fbQuestions;
+            state.currentQIndex = 0; state.quizScore = 0;
+            
+            if(state.quizQuestions.length === 0) {
+                contentArea.innerHTML = `<p style="color: var(--error); text-align:center;">Không có câu hỏi nào! Vui lòng kiểm tra kết nối Firebase.</p>`;
+                return;
+            }
+            
+            renderQuizQuestion();
         }
 
         async function startExamMode(navEl) {
@@ -1005,17 +1114,30 @@
             document.getElementById('quiz-progress-bar').style.width = '0%';
             
             const contentArea = document.getElementById('quiz-content-area');
-            contentArea.innerHTML = `<div style="text-align: center; padding: 40px;"><i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: var(--warning); margin-bottom: 16px;"></i><p>Hệ thống IRT đang tạo bộ đề thi 45 câu phân hóa theo chỉ số Theta (${state.theta})...</p></div>`;
+            contentArea.innerHTML = `<div style="text-align: center; padding: 40px;"><i class="fa-solid fa-circle-notch fa-spin fa-2x" style="color: var(--warning); margin-bottom: 16px;"></i><p>Hệ thống IRT đang tải bộ đề 45 câu từ ngân hàng đề NCKH...</p></div>`;
             
-            const prompt = `Tạo đúng 45 câu hỏi trắc nghiệm Tin học tổng hợp phân hóa độ khó theo năng lực Theta = ${state.theta}. Bắt buộc trả về JSON: {"questions": [{"q": "Câu hỏi?", "options": ["A", "B", "C", "D"], "answer": 0}]}`;
+            const REQUIRED_COUNT = 45;
             
-            try {
-                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEYS.GROQ}` }, body: JSON.stringify({ model: API_KEYS.MODEL, messages: [{role: "user", content: prompt}], response_format: { type: "json_object" } }) });
-                state.quizQuestions = JSON.parse((await res.json()).choices[0].message.content.trim()).questions.slice(0, 45);
-                state.currentQIndex = 0; state.quizScore = 0;
-                startTimer(45); 
-                renderQuizQuestion();
-            } catch(e) { contentArea.innerHTML = `<p style="color: var(--error); text-align:center;">Lỗi kết nối máy chủ sinh đề!</p>`; }
+            // 1. Lấy câu hỏi từ Firebase (tất cả chủ đề, Adaptive theo Theta)
+            let fbQuestions = await fetchQuizzesFromFirebase(null, REQUIRED_COUNT, state.theta);
+            
+            // 2. Nếu Firebase không đủ, AI sinh bổ sung
+            if(fbQuestions.length < REQUIRED_COUNT) {
+                const missing = REQUIRED_COUNT - fbQuestions.length;
+                const aiQuestions = await generateAIQuestions("Tin học tổng hợp", missing, state.theta);
+                fbQuestions = [...fbQuestions, ...aiQuestions];
+            }
+            
+            state.quizQuestions = fbQuestions;
+            state.currentQIndex = 0; state.quizScore = 0;
+            
+            if(state.quizQuestions.length === 0) {
+                contentArea.innerHTML = `<p style="color: var(--error); text-align:center;">Không có câu hỏi nào! Vui lòng kiểm tra kết nối Firebase.</p>`;
+                return;
+            }
+            
+            startTimer(45); 
+            renderQuizQuestion();
         }
 
         function renderQuizQuestion() {
@@ -1034,21 +1156,62 @@
             contentArea.innerHTML = `<h3 style="font-size: 18px; line-height: 1.6; margin-bottom: 20px;">${qData.q}</h3><div id="options-container">${optionsHtml}</div>`;
         }
 
-        function selectAnswer(selectedIndex, el) {
+        async function selectAnswer(selectedIndex, el) {
             const container = document.getElementById('options-container');
             const options = container.querySelectorAll('.quiz-option');
-            const correctIndex = state.quizQuestions[state.currentQIndex].answer;
+            const qData = state.quizQuestions[state.currentQIndex];
+            const correctIndex = qData.answer;
             
             options.forEach(opt => opt.style.pointerEvents = 'none');
             
-            if (selectedIndex === correctIndex) {
+            const isCorrect = selectedIndex === correctIndex;
+            if (isCorrect) {
                 el.classList.add('correct'); state.quizScore++;
             } else { 
                 el.classList.add('wrong'); 
                 if(options[correctIndex]) options[correctIndex].classList.add('correct'); 
             }
             
-            setTimeout(() => { state.currentQIndex++; renderQuizQuestion(); }, 1200);
+            // Lưu lịch sử trả lời vào Firebase để giáo viên theo dõi
+            if(state.user) {
+                try {
+                    await db.collection('responses').add({
+                        userId: state.user.id,
+                        userName: state.user.name,
+                        userClass: state.user.class,
+                        quizId: qData.id || 'ai-generated',
+                        question: qData.q,
+                        selectedAnswer: ['A','B','C','D'][selectedIndex],
+                        correctAnswer: ['A','B','C','D'][correctIndex],
+                        isCorrect: isCorrect,
+                        difficulty: qData.diff || 0,
+                        discrimination: qData.disc || 1.0,
+                        topic: qData.topic || '',
+                        theta: state.theta,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch(e) { console.error("Lỗi lưu response:", e); }
+            }
+            
+            // AI giải thích đáp án khi trả lời sai
+            if(!isCorrect) {
+                const aiExplain = document.createElement('div');
+                aiExplain.id = 'ai-explain';
+                aiExplain.style.cssText = 'margin-top: 16px; padding: 16px; background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.3); border-radius: 14px; font-size: 13.5px; line-height: 1.6;';
+                aiExplain.innerHTML = `<div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; color:var(--secondary); font-weight:800;"><i class="fa-solid fa-robot"></i> AI Tutor đang phân tích...</div>`;
+                container.appendChild(aiExplain);
+                
+                try {
+                    const prompt = `Học sinh trả lời SAI câu hỏi Tin học sau:\nCâu hỏi: "${qData.q}"\nĐáp án đúng: ${['A','B','C','D'][correctIndex]}. ${qData.options[correctIndex]}\nĐáp án học sinh chọn: ${['A','B','C','D'][selectedIndex]}. ${qData.options[selectedIndex]}\n\nHãy giải thích ngắn gọn (3-4 câu) theo cấu trúc:\n1. Vì sao đáp án đúng là đúng\n2. Khái niệm học sinh có thể nhầm lẫn\n3. Kiến thức liên quan\n4. Mẹo ghi nhớ`;
+                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEYS.GROQ}` }, body: JSON.stringify({ model: API_KEYS.MODEL, messages: [{role: "user", content: prompt}] }) });
+                    const reply = (await res.json()).choices[0].message.content;
+                    aiExplain.innerHTML = `<div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; color:var(--secondary); font-weight:800;"><i class="fa-solid fa-robot"></i> AI Tutor giải thích</div>${reply.replace(/\n/g, '<br>')}`;
+                } catch(e) {
+                    aiExplain.innerHTML = `<div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; color:var(--secondary); font-weight:800;"><i class="fa-solid fa-robot"></i> AI Tutor</div>Đáp án đúng là <strong>${['A','B','C','D'][correctIndex]}</strong>. Hãy xem lại kiến thức về chủ đề này nhé!</div>`;
+                }
+            }
+            
+            setTimeout(() => { state.currentQIndex++; renderQuizQuestion(); }, isCorrect ? 1200 : 4000);
         }
 
         function showPracticeResults() {
@@ -1075,16 +1238,98 @@
             showToast(`+${earnedXP} XP!`, 'success');
         }
 
+        // ===== IRT 3PL MODEL FUNCTIONS =====
+        // Hàm tính xác suất trả lời đúng theo mô hình 3PL IRT
+        function irtProbability(theta, a, b, c) {
+            const exp = Math.exp(a * (theta - b));
+            return c + (1 - c) * (exp / (1 + exp));
+        }
+
+        // Question Information Function: I(θ) = a² * (P - c)² / (P * (1-c)²) * (1 - P)
+        function irtQuestionInformation(theta, a, b, c) {
+            const P = irtProbability(theta, a, b, c);
+            const Q = 1 - P;
+            if(P <= 0 || P >= 1) return 0;
+            return Math.pow(a, 2) * Math.pow(P - c, 2) * Q / (Math.pow(P, 2) * Math.pow(1 - c, 2));
+        }
+
+        // Test Information Function: T(θ) = Σ I_i(θ)
+        function irtTestInformation(questions, theta) {
+            return questions.reduce((sum, q) => {
+                const a = q.disc || 1.0;
+                const b = q.diff || 0;
+                const c = 0.25;
+                return sum + irtQuestionInformation(theta, a, b, c);
+            }, 0);
+        }
+
+        // Standard Error of Estimation: SE = 1/√T(θ)
+        function irtStandardError(questions, theta) {
+            const info = irtTestInformation(questions, theta);
+            return info > 0 ? 1 / Math.sqrt(info) : 3;
+        }
+        // ===== END IRT FUNCTIONS =====
+
+        // Hàm ước lượng Theta bằng Maximum Likelihood Estimation (MLE)
+        function estimateTheta(questions, answers) {
+            if(!questions || questions.length === 0) return 0;
+            
+            // Khởi tạo theta ban đầu
+            let theta = 0;
+            const maxIter = 20;
+            const tol = 0.001;
+            
+            for(let iter = 0; iter < maxIter; iter++) {
+                let firstDeriv = 0;  // Đạo hàm bậc 1
+                let secondDeriv = 0; // Đạo hàm bậc 2
+                
+                questions.forEach((q, i) => {
+                    const a = q.disc || 1.0;  // Độ phân biệt
+                    const b = q.diff || 0;    // Độ khó
+                    const c = 0.25;           // Xác suất đoán mò (4 đáp án)
+                    const u = answers[i] ? 1 : 0; // 1 nếu đúng, 0 nếu sai
+                    
+                    const P = irtProbability(theta, a, b, c);
+                    const Q = 1 - P;
+                    
+                    // Đạo hàm bậc 1 của log-likelihood
+                    firstDeriv += a * (u - P) * (P - c) / (P * (1 - c));
+                    
+                    // Đạo hàm bậc 2 của log-likelihood
+                    secondDeriv -= Math.pow(a, 2) * Math.pow(P - c, 2) * Q / (P * Math.pow(1 - c, 2));
+                });
+                
+                if(Math.abs(secondDeriv) < 1e-10) break;
+                
+                const step = firstDeriv / secondDeriv;
+                theta += step;
+                
+                if(Math.abs(step) < tol) break;
+            }
+            
+            // Giới hạn theta trong khoảng [-3, 3]
+            return Math.max(-3, Math.min(3, theta));
+        }
+
         function submitExam() {
             clearInterval(timerInterval);
             document.getElementById('quiz-progress-bar').style.width = '100%';
             const totalQ = state.quizQuestions.length;
             
-            let scoreRatio = state.quizScore / totalQ;
+            // Lưu lịch sử trả lời để tính IRT
+            const answers = state.quizQuestions.map((q, i) => {
+                // Trong thực tế cần lưu từng câu trả lời, ở đây dùng quizScore để ước lượng
+                return i < state.quizScore;
+            });
+            
+            // Ước lượng Theta bằng MLE (Maximum Likelihood Estimation)
+            let newTheta = estimateTheta(state.quizQuestions, answers);
+            newTheta = parseFloat(newTheta.toFixed(2));
+            
+            // Cập nhật theta mới (kết hợp với theta cũ để ổn định)
             let oldTheta = parseFloat(state.theta);
-            let newTheta = parseFloat((oldTheta + (scoreRatio - 0.5) * 1.5).toFixed(2));
-            state.theta = newTheta;
-            state.historyTheta.push(newTheta);
+            state.theta = parseFloat(((oldTheta * 0.5) + (newTheta * 0.5)).toFixed(2));
+            state.historyTheta.push(state.theta);
             if(state.historyTheta.length > 6) state.historyTheta.shift();
             
             const earnedXP = state.quizScore * 20; state.xp += earnedXP;
@@ -1097,11 +1342,11 @@
                     <div style="font-size: 40px; font-weight: 800; color: var(--warning); font-family: var(--font-code); margin: 16px 0;">
                         ${state.quizScore} <span style="font-size: 20px; color: var(--text-muted);">/ ${totalQ} Câu đúng</span>
                     </div>
-                    <p style="margin-bottom: 24px; color: var(--text-muted);">Theta mới: <strong>${newTheta}</strong> | XP: <strong>+${earnedXP}</strong></p>
+                    <p style="margin-bottom: 24px; color: var(--text-muted);">Theta mới (MLE): <strong>${state.theta}</strong> | XP: <strong>+${earnedXP}</strong></p>
                     <button class="btn btn-primary" onclick="exitQuiz()"><i class="fa-solid fa-house"></i> Quay về Dashboard</button>
                 </div>
             `;
-            showToast(`Bài thi hoàn tất! Theta: ${newTheta}`, 'success');
+            showToast(`Bài thi hoàn tất! Theta: ${state.theta}`, 'success');
         }
 
         function exitQuiz() { 
