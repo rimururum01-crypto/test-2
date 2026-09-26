@@ -1,0 +1,114 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =====================================================
+    // NCKH TIN HỌC 10 — FIRESTORE RULES PRO V2 (DEVELOPMENT)
+    // =====================================================
+    // App hiện tại dùng đăng nhập username/password tự quản lý,
+    // không dùng Firebase Authentication nên request.auth chưa có.
+    // Vì vậy các helper dưới đây vẫn mở trong DEV.
+    // Khi đưa lên production: thay isSignedIn/isTeacher/isOwner bằng
+    // request.auth + custom claims/role và KHÔNG dùng allow ... if true.
+
+    function isSignedIn() { return true; }
+    function isTeacher() { return true; }
+    function isOwner(userId) { return true; }
+
+    function validQuestion(data) {
+      return data.question is string
+        && data.question.size() >= 3
+        && data.options is list
+        && data.options.size() == 4
+        && data.options[0] is string && data.options[0].size() >= 1
+        && data.options[1] is string && data.options[1].size() >= 1
+        && data.options[2] is string && data.options[2].size() >= 1
+        && data.options[3] is string && data.options[3].size() >= 1
+        && data.correctAnswer is int
+        && data.correctAnswer >= 0
+        && data.correctAnswer <= 3
+        && data.topic is string
+        && data.topic in ['TH1', 'TH2', 'TH3', 'TH4', 'TH5', 'TH6']
+        && data.difficulty is string
+        && data.difficulty in ['easy', 'medium', 'hard']
+        && data.status is string
+        && data.status in ['draft', 'published', 'archived']
+        && data.active is bool
+        && data.teacherApproved is bool
+        && data.researchEligible is bool;
+    }
+
+    function coherentPublication(data) {
+      return data.status != 'published'
+        || (data.teacherApproved == true
+            && data.active == true
+            && data.researchEligible == true);
+    }
+
+    // ===== USERS =====
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if false;
+    }
+
+    // ===== SINGLE SOURCE OF TRUTH: QUESTIONS =====
+    // Teacher dashboard writes here; student dashboard reads published+active.
+    match /questions/{questionId} {
+      allow read: if isSignedIn();
+      allow create: if isTeacher()
+        && validQuestion(request.resource.data)
+        && coherentPublication(request.resource.data);
+      allow update: if isTeacher()
+        && validQuestion(request.resource.data)
+        && coherentPublication(request.resource.data);
+      allow delete: if isTeacher();
+    }
+
+    // ===== LEGACY COLLECTIONS — kept readable during migration =====
+    match /questionBank/{questionId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isTeacher();
+    }
+    match /quizzes/{questionId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isTeacher();
+    }
+    match /quiz/{questionId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isTeacher();
+    }
+
+    // ===== IMPORT AUDIT LOG =====
+    match /questionImportSessions/{sessionId} {
+      allow read: if isSignedIn();
+      allow create: if isTeacher();
+      allow update, delete: if false;
+    }
+
+    // ===== STUDENT ACTIVITY =====
+    match /studentResponses/{responseId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+    match /learningSessions/{sessionId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if false;
+    }
+    match /studentDailyStats/{statId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // ===== SYSTEM =====
+    match /systemSettings/{settingId} {
+      allow read: if isSignedIn();
+      allow write: if isTeacher();
+    }
+    match /__health__/{docId} {
+      allow read, write: if false;
+    }
+  }
+}
